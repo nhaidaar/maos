@@ -2,7 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:maos/theme.dart';
 
 class HotTopic extends StatelessWidget {
-  final String title, category, publisher, minRead, date, imgUrl;
+  final String title,
+      category,
+      publisher,
+      minRead,
+      date,
+      imgUrl,
+      publisherLogoUrl;
   final VoidCallback? action;
   const HotTopic({
     super.key,
@@ -13,6 +19,7 @@ class HotTopic extends StatelessWidget {
     this.minRead = '5',
     required this.date,
     required this.category,
+    required this.publisherLogoUrl,
   });
 
   @override
@@ -81,17 +88,47 @@ class HotTopic extends StatelessWidget {
                   margin: const EdgeInsets.only(top: 12),
                   child: Row(
                     children: [
+                      Container(
+                        margin: const EdgeInsets.only(right: 8),
+                        height: 16,
+                        width: 16,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: AssetImage(publisherLogoUrl),
+                          ),
+                        ),
+                      ),
                       Text(
                         'by $publisher',
                         style:
                             medium.copyWith(fontSize: 10, color: Colors.white),
                       ),
                       const Spacer(),
+                      minRead == '1'
+                          ? Text(
+                              '1 min read',
+                              style: medium.copyWith(
+                                  fontSize: 10, color: Colors.white),
+                            )
+                          : Text(
+                              '$minRead mins read',
+                              style: medium.copyWith(
+                                  fontSize: 10, color: Colors.white),
+                            ),
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 6),
+                        height: 5,
+                        width: 5,
+                        decoration: const BoxDecoration(
+                            shape: BoxShape.circle, color: greyWhiteColor),
+                      ),
                       Text(
-                        '$minRead min read - $date',
+                        date,
                         style:
                             medium.copyWith(fontSize: 10, color: Colors.white),
-                      )
+                      ),
                     ],
                   ),
                 )

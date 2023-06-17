@@ -28,8 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
       backgroundColor: Colors.white,
       body: Center(
         child: Container(
-          width: 250,
-          height: 100,
+          width: 200,
           decoration: const BoxDecoration(
             image: DecorationImage(
               image: AssetImage(

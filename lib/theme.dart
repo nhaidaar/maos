@@ -15,3 +15,6 @@ TextStyle medium =
 
 TextStyle regular =
     GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w400);
+
+TextStyle montserrat =
+    GoogleFonts.montserrat(fontSize: 12, fontWeight: FontWeight.w500);

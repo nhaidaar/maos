@@ -9,10 +9,29 @@ class NotificationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 1.5,
+        toolbarHeight: 72,
         backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(
-          color: Colors.black,
+        elevation: 0.8,
+        leadingWidth: 68,
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Container(
+            height: 48,
+            width: 48,
+            margin: const EdgeInsets.only(left: 18),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: greyBlur20),
+            ),
+            child: Center(
+              child: Image.asset(
+                'assets/icons/news_back.png',
+                width: 24,
+              ),
+            ),
+          ),
         ),
         title: Text(
           'Notification',
@@ -23,35 +42,41 @@ class NotificationPage extends StatelessWidget {
       body: ListView(
         children: [
           CustomNotification(
-            title:
-                'Media Israel Puji FIFA Usai Piala Dunia U-20 Batal di Indonesia',
-            imgUrl: 'assets/images/news1.jpeg',
-            time: '3 mins ago',
-            action: () {},
+            title: 'Kebakaran di Jakarta Timur Hanguskan 16 Kambing',
+            imgUrl: 'assets/images/news5.jpg',
+            time: '6 mins ago',
+            action: () {
+              Navigator.pushNamed(context, '/news');
+            },
             isUnread: true,
           ),
           CustomNotification(
             title:
-                'Media Israel Puji FIFA Usai Piala Dunia U-20 Batal di Indonesia',
+                'Manfaat Habatusauda bagi Kesehatan dan Cara Terbaik Mengonsumsinya',
+            imgUrl: 'assets/images/news3.jpg',
+            time: '17 mins ago',
+            action: () {
+              Navigator.pushNamed(context, '/news');
+            },
+            isUnread: true,
+          ),
+          CustomNotification(
+            title: 'Media Argentina Puji Sambutan Spesial Indonesia',
             imgUrl: 'assets/images/news2.jpg',
-            time: '3 mins ago',
-            action: () {},
-            isUnread: true,
-          ),
-          CustomNotification(
-            title:
-                'Media Israel Puji FIFA Usai Piala Dunia U-20 Batal di Indonesia',
-            imgUrl: 'assets/images/news1.jpeg',
-            time: '3 mins ago',
-            action: () {},
+            time: '22 mins ago',
+            action: () {
+              Navigator.pushNamed(context, '/news');
+            },
             isUnread: false,
           ),
           CustomNotification(
             title:
-                'Media Israel Puji FIFA Usai Piala Dunia U-20 Batal di Indonesia',
-            imgUrl: 'assets/images/news1.jpeg',
-            time: '3 mins ago',
-            action: () {},
+                'Pertamina Ajak Generasi Muda Jadi Agen Perubahan Lingkungan',
+            imgUrl: 'assets/images/news1.jpg',
+            time: '54 mins ago',
+            action: () {
+              Navigator.pushNamed(context, '/news');
+            },
             isUnread: false,
           ),
         ],

@@ -232,34 +232,42 @@ class Home extends StatelessWidget {
                       width: 16,
                     ),
                     HotTopic(
-                      imgUrl: 'assets/images/news1.jpeg',
+                      imgUrl: 'assets/images/news1.jpg',
                       title:
-                          'Media Israel Puji FIFA Usai Piala Dunia U-20 Batal di Indonesia',
+                          'Pertamina Ajak Generasi Muda Jadi Agen Perubahan Lingkungan',
                       publisher: 'CNN Indonesia',
-                      date: '16 April 2023',
-                      category: 'Sport',
+                      publisherLogoUrl: 'assets/images/logo_cnn.png',
+                      date: '17 Juni 2023',
+                      category: 'Economy',
+                      minRead: '4',
                       action: () {
                         Navigator.pushNamed(context, '/news');
                       },
                     ),
                     HotTopic(
-                      imgUrl: 'assets/images/news2.jpg',
-                      title:
-                          'Saat Juri Kaget Putri Ariani Nyanyikan Lagu Sendiri di America\'s Got Talent...',
-                      publisher: 'Kompas',
-                      date: '08 June 2023',
-                      category: 'Entertainment',
-                      action: () {},
-                    ),
-                    HotTopic(
                       imgUrl: 'assets/images/news3.jpg',
                       title:
-                          'Momen Jokowi dan Prabowo Tertawa Lepas Saat Bertemu di Malaysia',
-                      publisher: 'Kumparan',
-                      date: '08 June 2023',
-                      category: 'Politics',
+                          'Manfaat Habatusauda bagi Kesehatan dan Cara Terbaik Mengonsumsinya',
+                      publisher: 'Kompas',
+                      publisherLogoUrl: 'assets/images/logo_kompas.png',
+                      date: '17 Juni 2023',
+                      category: 'Lifestyle',
+                      minRead: '7',
+                      action: () {
+                        Navigator.pushNamed(context, '/news');
+                      },
+                    ),
+                    HotTopic(
+                      imgUrl: 'assets/images/news5.jpg',
+                      title: 'Kebakaran di Jakarta Timur Hanguskan 16 Kambing',
+                      publisher: 'Tempo',
+                      publisherLogoUrl: 'assets/images/logo_tempo.png',
+                      date: '17 Juni 2023',
+                      category: 'Regional',
                       minRead: '2',
-                      action: () {},
+                      action: () {
+                        Navigator.pushNamed(context, '/news');
+                      },
                     ),
                   ],
                 ),
@@ -292,11 +300,11 @@ class Home extends StatelessWidget {
                   action: () {},
                 ),
                 Category(
-                  title: 'Entertainment',
+                  title: 'Lifestyle',
                   action: () {},
                 ),
                 Category(
-                  title: 'Religion',
+                  title: 'Economy',
                   action: () {},
                 ),
                 Category(
@@ -304,7 +312,7 @@ class Home extends StatelessWidget {
                   action: () {},
                 ),
                 Category(
-                  title: 'Technology',
+                  title: 'Regional',
                   action: () {},
                 ),
               ],
@@ -361,32 +369,27 @@ class Following extends StatelessWidget {
                   width: 16,
                 ),
                 Publisher(
-                  name: 'Buletin News',
+                  name: 'CNN Indonesia',
+                  imgUrl: 'assets/images/logo_cnn.png',
+                  action: () {},
+                ),
+                Publisher(
+                  name: 'Kompas',
+                  imgUrl: 'assets/images/logo_kompas.png',
+                  action: () {},
+                ),
+                Publisher(
+                  name: 'Tempo.co',
+                  imgUrl: 'assets/images/logo_tempo.png',
+                  action: () {},
+                ),
+                Publisher(
+                  name: 'Lorem',
                   imgUrl: 'assets/images/profile.jpg',
                   action: () {},
                 ),
                 Publisher(
-                  name: 'Buletin News',
-                  imgUrl: 'assets/images/profile.jpg',
-                  action: () {},
-                ),
-                Publisher(
-                  name: 'Buletin News',
-                  imgUrl: 'assets/images/profile.jpg',
-                  action: () {},
-                ),
-                Publisher(
-                  name: 'Buletin News',
-                  imgUrl: 'assets/images/profile.jpg',
-                  action: () {},
-                ),
-                Publisher(
-                  name: 'Buletin News',
-                  imgUrl: 'assets/images/profile.jpg',
-                  action: () {},
-                ),
-                Publisher(
-                  name: 'Buletin News',
+                  name: 'Ipsum',
                   imgUrl: 'assets/images/profile.jpg',
                   action: () {},
                 ),
@@ -403,60 +406,71 @@ class Following extends StatelessWidget {
           Column(
             children: [
               TopPicks(
-                title:
-                    'Hindari 7 Kebiasaan di Malam Hari Ini, Bisa Bikin Perut Membuncit',
+                title: 'Media Argentina Puji Sambutan Spesial Indonesia',
                 publisher: 'CNN Indonesia',
                 date: '05 Juni 2023',
-                imgUrl: 'assets/images/toppicks1.jpeg',
-                action: () {},
+                imgUrl: 'assets/images/news2.jpg',
+                action: () {
+                  Navigator.pushNamed(context, '/news');
+                },
               ),
               TopPicks(
                 title:
-                    'Mayat Wanita Ditemukan Dalam Mobil di Medan, Warga Lihat Ada Ceceran Darah',
+                    'Air Sungai Bengawan Solo Tercemar Limbah Industri Minuman Beralkohol, Berbau Dan Berwarna Hitam',
                 publisher: 'Kompas',
                 date: '08 Juni 2023',
-                imgUrl: 'assets/images/toppicks2.jpg',
-                action: () {},
+                imgUrl: 'assets/images/news4.jpg',
+                action: () {
+                  Navigator.pushNamed(context, '/news');
+                },
               ),
               TopPicks(
                 title:
-                    'Haris Azhar Bantah Minta Saham Freeport ke Luhut, Tegaskan Bantu Masyarakat Adat',
-                publisher: 'Kompas',
+                    'Elektabilitas Anies Salip Ganjar dan Pepet Prabowo di Survei Terbaru IPO',
+                publisher: 'Tempo',
                 date: '08 Juni 2023',
-                imgUrl: 'assets/images/toppicks3.jpg',
-                action: () {},
+                imgUrl: 'assets/images/news6.jpg',
+                action: () {
+                  Navigator.pushNamed(context, '/news');
+                },
               ),
               TopPicks(
                 title:
-                    'Hindari 7 Kebiasaan di Malam Hari Ini, Bisa Bikin Perut Membuncit',
+                    'Pertamina Ajak Generasi Muda Jadi Agen Perubahan Lingkungan',
                 publisher: 'CNN Indonesia',
                 date: '05 Juni 2023',
-                imgUrl: 'assets/images/toppicks1.jpeg',
-                action: () {},
+                imgUrl: 'assets/images/news1.jpg',
+                action: () {
+                  Navigator.pushNamed(context, '/news');
+                },
               ),
               TopPicks(
                 title:
-                    'Mayat Wanita Ditemukan Dalam Mobil di Medan, Warga Lihat Ada Ceceran Darah',
+                    'Manfaat Habatusauda bagi Kesehatan dan Cara Terbaik Mengonsumsinya',
                 publisher: 'Kompas',
                 date: '08 Juni 2023',
-                imgUrl: 'assets/images/toppicks2.jpg',
-                action: () {},
+                imgUrl: 'assets/images/news3.jpg',
+                action: () {
+                  Navigator.pushNamed(context, '/news');
+                },
               ),
               TopPicks(
-                title:
-                    'Haris Azhar Bantah Minta Saham Freeport ke Luhut, Tegaskan Bantu Masyarakat Adat',
-                publisher: 'Kompas',
+                title: 'Kebakaran di Jakarta Timur Hanguskan 16 Kambing',
+                publisher: 'Tempo',
                 date: '08 Juni 2023',
-                imgUrl: 'assets/images/toppicks3.jpg',
-                action: () {},
+                imgUrl: 'assets/images/news5.jpg',
+                action: () {
+                  Navigator.pushNamed(context, '/news');
+                },
               ),
               TopPicks(
-                title:
-                    'Hindari 7 Kebiasaan di Malam Hari Ini, Bisa Bikin Perut Membuncit',
+                title: 'Media Argentina Puji Sambutan Spesial Indonesia',
                 publisher: 'CNN Indonesia',
                 date: '05 Juni 2023',
-                imgUrl: 'assets/images/toppicks1.jpeg',
-                action: () {},
+                imgUrl: 'assets/images/news2.jpg',
+                action: () {
+                  Navigator.pushNamed(context, '/news');
+                },
               ),
             ],
           ),
@@ -491,49 +505,57 @@ class Saved extends StatelessWidget {
               runSpacing: 16,
               children: [
                 SavedCard(
-                  title:
-                      'Hindari 7 Kebiasaan di Malam Hari Ini, Bisa Bikin Perut Membuncit',
-                  imgUrl: 'assets/images/toppicks1.jpeg',
-                  category: 'Lifestyle',
-                  publisher: 'CNN Indonesia',
-                  date: '08 Juni 2023',
-                  action: () {},
+                  title: 'Kebakaran di Jakarta Timur Hanguskan 16 Kambing',
+                  imgUrl: 'assets/images/news5.jpg',
+                  category: 'Regional',
+                  publisher: 'Tempo',
+                  date: '17 Juni 2023',
+                  action: () {
+                    Navigator.pushNamed(context, '/news');
+                  },
                 ),
                 SavedCard(
                   title:
-                      'Hindari 7 Kebiasaan di Malam Hari Ini, Bisa Bikin Perut Membuncit',
-                  imgUrl: 'assets/images/toppicks1.jpeg',
+                      'Manfaat Habatusauda bagi Kesehatan dan Cara Terbaik Mengonsumsinya',
+                  imgUrl: 'assets/images/news3.jpg',
                   category: 'Lifestyle',
+                  publisher: 'Kompas',
+                  date: '17 Juni 2023',
+                  action: () {
+                    Navigator.pushNamed(context, '/news');
+                  },
+                ),
+                SavedCard(
+                  title: 'Media Argentina Puji Sambutan Spesial Indonesia',
+                  imgUrl: 'assets/images/news2.jpg',
+                  category: 'Sport',
                   publisher: 'CNN Indonesia',
-                  date: '08 Juni 2023',
-                  action: () {},
+                  date: '17 Juni 2023',
+                  action: () {
+                    Navigator.pushNamed(context, '/news');
+                  },
                 ),
                 SavedCard(
                   title:
-                      'Hindari 7 Kebiasaan di Malam Hari Ini, Bisa Bikin Perut Membuncit',
-                  imgUrl: 'assets/images/toppicks1.jpeg',
-                  category: 'Lifestyle',
+                      'Pertamina Ajak Generasi Muda Jadi Agen Perubahan Lingkungan',
+                  imgUrl: 'assets/images/news1.jpg',
+                  category: 'Economy',
                   publisher: 'CNN Indonesia',
-                  date: '08 Juni 2023',
-                  action: () {},
+                  date: '17 Juni 2023',
+                  action: () {
+                    Navigator.pushNamed(context, '/news');
+                  },
                 ),
                 SavedCard(
                   title:
-                      'Hindari 7 Kebiasaan di Malam Hari Ini, Bisa Bikin Perut Membuncit',
-                  imgUrl: 'assets/images/toppicks1.jpeg',
-                  category: 'Lifestyle',
-                  publisher: 'CNN Indonesia',
-                  date: '08 Juni 2023',
-                  action: () {},
-                ),
-                SavedCard(
-                  title:
-                      'Hindari 7 Kebiasaan di Malam Hari Ini, Bisa Bikin Perut Membuncit',
-                  imgUrl: 'assets/images/toppicks1.jpeg',
-                  category: 'Lifestyle',
-                  publisher: 'CNN Indonesia',
-                  date: '08 Juni 2023',
-                  action: () {},
+                      'Elektabilitas Anies Salip Ganjar dan Pepet Prabowo di Survei Terbaru IPO',
+                  imgUrl: 'assets/images/news6.jpg',
+                  category: 'Politics',
+                  publisher: 'Tempo',
+                  date: '17 Juni 2023',
+                  action: () {
+                    Navigator.pushNamed(context, '/news');
+                  },
                 ),
               ],
             ),
@@ -551,12 +573,13 @@ class Profile extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 40),
+        padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 40),
         children: [
           Center(
             child: Container(
               padding: const EdgeInsets.all(30),
               decoration: BoxDecoration(
+                border: Border.all(color: greyBlur20),
                 borderRadius: BorderRadius.circular(20),
                 color: Colors.white,
               ),
@@ -647,28 +670,33 @@ class TopAll extends StatelessWidget {
     return Column(
       children: [
         TopPicks(
-          title:
-              'Hindari 7 Kebiasaan di Malam Hari Ini, Bisa Bikin Perut Membuncit',
+          title: 'Media Argentina Puji Sambutan Spesial Indonesia',
           publisher: 'CNN Indonesia',
-          date: '05 Juni 2023',
-          imgUrl: 'assets/images/toppicks1.jpeg',
-          action: () {},
+          date: '17 Juni 2023',
+          imgUrl: 'assets/images/news2.jpg',
+          action: () {
+            Navigator.pushNamed(context, '/news');
+          },
         ),
         TopPicks(
           title:
-              'Mayat Wanita Ditemukan Dalam Mobil di Medan, Warga Lihat Ada Ceceran Darah',
+              'Manfaat Habatusauda bagi Kesehatan dan Cara Terbaik Mengonsumsinya',
           publisher: 'Kompas',
-          date: '08 Juni 2023',
-          imgUrl: 'assets/images/toppicks2.jpg',
-          action: () {},
+          date: '17 Juni 2023',
+          imgUrl: 'assets/images/news3.jpg',
+          action: () {
+            Navigator.pushNamed(context, '/news');
+          },
         ),
         TopPicks(
           title:
-              'Haris Azhar Bantah Minta Saham Freeport ke Luhut, Tegaskan Bantu Masyarakat Adat',
+              'Air Sungai Bengawan Solo Tercemar Limbah Industri Minuman Beralkohol, Berbau Dan Berwarna Hitam',
           publisher: 'Kompas',
-          date: '08 Juni 2023',
-          imgUrl: 'assets/images/toppicks3.jpg',
-          action: () {},
+          date: '17 Juni 2023',
+          imgUrl: 'assets/images/news4.jpg',
+          action: () {
+            Navigator.pushNamed(context, '/news');
+          },
         ),
       ],
     );

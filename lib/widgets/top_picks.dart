@@ -4,14 +4,15 @@ import 'package:maos/theme.dart';
 class TopPicks extends StatelessWidget {
   final String title, publisher, minRead, date, imgUrl;
   final VoidCallback? action;
-  const TopPicks(
-      {super.key,
-      required this.title,
-      required this.publisher,
-      this.minRead = '5',
-      required this.date,
-      required this.imgUrl,
-      this.action});
+  const TopPicks({
+    super.key,
+    required this.title,
+    required this.publisher,
+    this.minRead = '5',
+    required this.date,
+    required this.imgUrl,
+    this.action,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +41,8 @@ class TopPicks extends StatelessWidget {
                     title,
                     style: semi.copyWith(fontSize: 14),
                     textAlign: TextAlign.justify,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                   ),
                   const SizedBox(
                     height: 16,
