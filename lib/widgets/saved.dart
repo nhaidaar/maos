@@ -23,8 +23,8 @@ class SavedCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             margin: const EdgeInsets.only(right: 16),
-            height: 180,
-            width: 180,
+            height: 164,
+            width: 164,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
@@ -37,8 +37,8 @@ class SavedCard extends StatelessWidget {
           ),
           Container(
             padding: const EdgeInsets.all(10),
-            height: 180,
-            width: 180,
+            height: 164,
+            width: 164,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8.0),
               gradient: LinearGradient(
@@ -51,8 +51,8 @@ class SavedCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             // margin: const EdgeInsets.all(12),
-            height: 180,
-            width: 180,
+            height: 164,
+            width: 164,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -71,7 +71,7 @@ class SavedCard extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(top: 72),
+                  margin: const EdgeInsets.only(top: 60),
                   child: Text(
                     title,
                     style: semi.copyWith(color: Colors.white, fontSize: 14),

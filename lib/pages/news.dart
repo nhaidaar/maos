@@ -260,7 +260,7 @@ class _NewsPageState extends State<NewsPage> {
                     date: '05 April 2023',
                   ),
                   Recommend(
-                    title: 'Top 7 Beatiful Architecture You Have to See!',
+                    title: 'Top 7 Beautiful Architecture You Have to See!',
                     imgUrl: 'assets/images/sample2.png',
                     minRead: '2',
                     date: '05 April 2023',

@@ -99,6 +99,9 @@ class Home extends StatelessWidget {
       child: ListView(
         scrollDirection: Axis.vertical,
         children: [
+          const SizedBox(
+            height: 16,
+          ),
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
