@@ -31,7 +31,7 @@ class ProfileMenu extends StatelessWidget {
             ),
             Text(
               title,
-              style: semi.copyWith(fontSize: 16),
+              style: semiboldTS.copyWith(fontSize: 16),
             ),
             const Spacer(),
             badge > 0
@@ -45,8 +45,8 @@ class ProfileMenu extends StatelessWidget {
                     child: Center(
                       child: Text(
                         badge.toString(),
-                        style:
-                            medium.copyWith(color: Colors.white, fontSize: 12),
+                        style: mediumTS.copyWith(
+                            color: Colors.white, fontSize: 12),
                       ),
                     ),
                   )

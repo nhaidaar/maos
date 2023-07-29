@@ -1,9 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:maos/blocs/news/news_bloc.dart';
+import 'package:maos/models/news_model.dart';
+import 'package:maos/shared/methods.dart';
 import 'package:maos/theme.dart';
 import 'package:maos/widgets/recommend.dart';
 
 class NewsPage extends StatefulWidget {
-  const NewsPage({super.key});
+  final NewsModel model;
+  final String? predicate;
+  const NewsPage({
+    super.key,
+    required this.model,
+    this.predicate,
+  });
 
   @override
   State<NewsPage> createState() => _NewsPageState();
@@ -17,6 +28,23 @@ class _NewsPageState extends State<NewsPage> {
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOut,
     );
+  }
+
+  bool _assetExists = false;
+
+  Future<void> checkAsset() async {
+    bool assetExists = await doesAssetExist(
+        'assets/images/logo_${widget.model.sourceId}.png'); // Replace with the actual asset path.
+
+    setState(() {
+      _assetExists = assetExists;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkAsset();
   }
 
   @override
@@ -85,8 +113,8 @@ class _NewsPageState extends State<NewsPage> {
                   Row(
                     children: [
                       Text(
-                        'Politics',
-                        style: semi.copyWith(fontSize: 12),
+                        capitalizeFirstLetter(widget.model.category.toString()),
+                        style: semiboldTS,
                       ),
                       Container(
                         margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -96,8 +124,9 @@ class _NewsPageState extends State<NewsPage> {
                             shape: BoxShape.circle, color: greyWhiteColor),
                       ),
                       Text(
-                        'Top 5 Hot Topic 🔥',
-                        style: semi.copyWith(fontSize: 12),
+                        widget.predicate ??
+                            '${capitalizeFirstLetter(widget.model.category.toString())} news for you 🔥',
+                        style: semiboldTS,
                       ),
                     ],
                   ),
@@ -105,9 +134,8 @@ class _NewsPageState extends State<NewsPage> {
                     height: 12,
                   ),
                   Text(
-                    'Hey, it\'s Sample News Page! Happy to see you here',
-                    style: semi.copyWith(fontSize: 24),
-                    maxLines: 3,
+                    widget.model.title.toString(),
+                    style: semiboldTS.copyWith(fontSize: 24),
                   ),
                   const SizedBox(
                     height: 12,
@@ -117,11 +145,15 @@ class _NewsPageState extends State<NewsPage> {
                       Container(
                         height: 22,
                         width: 22,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: greyBlur40),
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             fit: BoxFit.cover,
-                            image: AssetImage('assets/images/logo_cnn.png'),
+                            image: _assetExists
+                                ? AssetImage(
+                                    'assets/images/logo_${widget.model.sourceId}.png')
+                                : const AssetImage('assets/images/navicon.png'),
                           ),
                         ),
                       ),
@@ -129,24 +161,15 @@ class _NewsPageState extends State<NewsPage> {
                         width: 8,
                       ),
                       Text(
-                        'CNN Indonesia',
-                        style: semi.copyWith(fontSize: 13),
+                        capitalizeFirstLetter(widget.model.sourceId.toString()),
+                        style: semiboldTS.copyWith(fontSize: 13),
                       ),
                       const Spacer(),
                       Text(
-                        '7 mins read',
-                        style: medium.copyWith(fontSize: 12),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 8),
-                        height: 5,
-                        width: 5,
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle, color: greyWhiteColor),
-                      ),
-                      Text(
-                        '17 Juni 2023',
-                        style: medium.copyWith(fontSize: 12),
+                        DateFormat('d MMMM y').format(
+                          DateTime.parse(widget.model.pubDate.toString()),
+                        ),
+                        style: mediumTS,
                       ),
                     ],
                   ),
@@ -162,21 +185,31 @@ class _NewsPageState extends State<NewsPage> {
                       color: Colors.black, width: 4, style: BorderStyle.solid),
                 ),
               ),
-              child: Text(
-                'Praesent velit dolor, vulputate sit amet facilisis ac, venenatis quis metus. Mauris lacinia nec sem eu pellentesque. Phasellus suscipit ante non pellentesque egestas. Cras quis erat mi. Nulla lobortis, tellus commodo porttitor scelerisque, neque diam efficitur lacus, a accumsan diam turpis non elit.',
-                style: medium.copyWith(fontSize: 13, height: 1.358),
-                textAlign: TextAlign.justify,
-                maxLines: 10,
-              ),
+              child: widget.model.description == null
+                  ? Text(
+                      replaceSpecialCharacters(widget.model.title.toString()),
+                      style: mediumTS.copyWith(fontSize: 13, height: 1.358),
+                      textAlign: TextAlign.justify,
+                    )
+                  : Text(
+                      replaceSpecialCharacters(
+                          widget.model.description.toString()),
+                      style: mediumTS.copyWith(fontSize: 13, height: 1.358),
+                      textAlign: TextAlign.justify,
+                    ),
             ),
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               height: 210,
               width: double.infinity,
               decoration: BoxDecoration(
+                border: Border.all(color: greyBlur40),
                 borderRadius: BorderRadius.circular(10),
-                image: const DecorationImage(
-                  image: AssetImage('assets/images/sample4.png'),
+                image: DecorationImage(
+                  image: widget.model.imageUrl == null
+                      ? const AssetImage('assets/images/news2.jpg')
+                      : NetworkImage(widget.model.imageUrl.toString())
+                          as ImageProvider,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -184,37 +217,24 @@ class _NewsPageState extends State<NewsPage> {
             Container(
               margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
               child: Column(
-                children: [
-                  Text(
-                    'Praesent velit dolor, vulputate sit amet facilisis ac, venenatis quis metus. Mauris lacinia nec sem eu pellentesque. Phasellus suscipit ante non pellentesque egestas. Cras quis erat mi. Nulla lobortis, tellus commodo porttitor scelerisque, neque diam efficitur lacus, a accumsan diam turpis non elit.',
-                    style: medium.copyWith(fontSize: 14, height: 1.338),
-                    textAlign: TextAlign.justify,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    '“Praesent velit dolor, vulputate sit amet facilisis ac, venenatis quis metus. Mauris lacinia nec sem eu pellentesque. Phasellus suscipit.” - Ahmad Subari',
-                    style: medium.copyWith(fontSize: 14, height: 1.338),
-                    textAlign: TextAlign.justify,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    'Bonjourt velit dolor, vulputate sit amet facilisis ac, venenatis quis metus. Mauris lacinia nec sem eu pellentesque. Phasellus suscipit ante non pellentesque egestas. Cras quis erat mi. Nulla lobortis, tellus commodo porttitor scelerisque, neque diam efficitur lacus, a accumsan',
-                    style: medium.copyWith(fontSize: 14, height: 1.338),
-                    textAlign: TextAlign.justify,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    'Bonjourt velit dolor, vulputate sit amet facilisis ac, venenatis quis metus. Mauris lacinia nec sem eu pellentesque. Phasellus suscipit ante non pellentesque egestas. Cras quis erat mi. Nulla lobortis, tellus commodo porttitor scelerisque, neque diam efficitur lacus, a accumsan.',
-                    style: medium.copyWith(fontSize: 14, height: 1.338),
-                    textAlign: TextAlign.justify,
-                  )
-                ],
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: replaceSpecialCharacters(
+                        widget.model.content.toString())
+                    .replaceAll('${widget.model.title.toString()} ', '')
+                    .replaceAll('${widget.model.description.toString()} ', '')
+                    .replaceAll('ADVERTISEMENT SCROLL TO RESUME CONTENT ', '')
+                    .split('. ')
+                    .map((paragraph) => Padding(
+                          // Optional spacing between paragraphs
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Text(
+                            '$paragraph. ',
+                            style:
+                                mediumTS.copyWith(fontSize: 14, height: 1.338),
+                            textAlign: TextAlign.justify,
+                          ),
+                        ))
+                    .toList(),
               ),
             ),
             GestureDetector(
@@ -232,7 +252,7 @@ class _NewsPageState extends State<NewsPage> {
                 child: FittedBox(
                   child: Text(
                     'Back to Top',
-                    style: medium.copyWith(color: Colors.white),
+                    style: mediumTS.copyWith(color: Colors.white),
                   ),
                 ),
               ),
@@ -241,35 +261,44 @@ class _NewsPageState extends State<NewsPage> {
               margin: const EdgeInsets.only(left: 16, bottom: 8),
               child: Text(
                 'Recommend to Read',
-                style: semi.copyWith(fontSize: 18),
+                style: semiboldTS.copyWith(fontSize: 18),
               ),
             ),
-            const SingleChildScrollView(
+            SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     width: 16,
                   ),
-                  Recommend(
-                    title:
-                        'Just Wolf?, No This Is An Animal Who Can Bite Yourself',
-                    imgUrl: 'assets/images/sample1.png',
-                    minRead: '7',
-                    date: '05 April 2023',
-                  ),
-                  Recommend(
-                    title: 'Top 7 Beautiful Architecture You Have to See!',
-                    imgUrl: 'assets/images/sample2.png',
-                    minRead: '2',
-                    date: '05 April 2023',
-                  ),
-                  Recommend(
-                    title: 'How to Be an Astronaut?, Here\'s The Tips',
-                    imgUrl: 'assets/images/sample3.png',
-                    minRead: '5',
-                    date: '05 April 2023',
+                  BlocProvider(
+                    create: (context) => NewsBloc()..add(NewsRecommend()),
+                    child: BlocBuilder<NewsBloc, NewsState>(
+                      builder: (context, state) {
+                        if (state is NewsSuccess) {
+                          return Row(
+                            children: state.data.map((recommend) {
+                              return Recommend(
+                                model: recommend,
+                                action: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => NewsPage(
+                                        model: recommend,
+                                        predicate: 'Recommended news ✨',
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            }).toList(),
+                          );
+                        }
+                        return const RecommendLoading();
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -302,101 +331,121 @@ class NotificationAction extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              height: 50,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: greyBlur20),
+            GestureDetector(
+              onTap: () {
+                showCustomSnackbar(context, null);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                height: 50,
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: greyBlur20),
+                  ),
                 ),
-              ),
-              child: Row(
-                children: [
-                  Image.asset(
-                    'assets/icons/news_follow.png',
-                    scale: 2.5,
-                  ),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  Text(
-                    'Follow Publication',
-                    style: montserrat,
-                  ),
-                ],
+                child: Row(
+                  children: [
+                    Image.asset(
+                      'assets/icons/news_follow.png',
+                      scale: 2.5,
+                    ),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      'Follow Publication',
+                      style: actionButton,
+                    ),
+                  ],
+                ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              height: 50,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: greyBlur20),
+            GestureDetector(
+              onTap: () {
+                showCustomSnackbar(context, null);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                height: 50,
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: greyBlur20),
+                  ),
                 ),
-              ),
-              child: Row(
-                children: [
-                  Image.asset(
-                    'assets/icons/news_share.png',
-                    scale: 2.5,
-                  ),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  Text(
-                    'Share',
-                    style: montserrat,
-                  ),
-                ],
+                child: Row(
+                  children: [
+                    Image.asset(
+                      'assets/icons/news_share.png',
+                      scale: 2.5,
+                    ),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      'Share',
+                      style: actionButton,
+                    ),
+                  ],
+                ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              height: 50,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: greyBlur20),
+            GestureDetector(
+              onTap: () {
+                showCustomSnackbar(context, null);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                height: 50,
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: greyBlur20),
+                  ),
                 ),
-              ),
-              child: Row(
-                children: [
-                  Image.asset(
-                    'assets/icons/news_save.png',
-                    scale: 2.5,
-                  ),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  Text(
-                    'Save article',
-                    style: montserrat,
-                  ),
-                ],
+                child: Row(
+                  children: [
+                    Image.asset(
+                      'assets/icons/news_save.png',
+                      scale: 2.5,
+                    ),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      'Save article',
+                      style: actionButton,
+                    ),
+                  ],
+                ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              height: 50,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: greyBlur20),
+            GestureDetector(
+              onTap: () {
+                showCustomSnackbar(context, null);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                height: 50,
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: greyBlur20),
+                  ),
                 ),
-              ),
-              child: Row(
-                children: [
-                  Image.asset(
-                    'assets/icons/news_report.png',
-                    scale: 2.5,
-                    color: Colors.red,
-                  ),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  Text(
-                    'Report',
-                    style: montserrat.copyWith(color: Colors.red),
-                  ),
-                ],
+                child: Row(
+                  children: [
+                    Image.asset(
+                      'assets/icons/news_report.png',
+                      scale: 2.5,
+                      color: Colors.red,
+                    ),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      'Report',
+                      style: actionButton.copyWith(color: Colors.red),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

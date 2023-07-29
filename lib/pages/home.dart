@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:maos/blocs/news/news_bloc.dart';
+import 'package:maos/pages/news.dart';
+import 'package:maos/pages/search.dart';
+import 'package:maos/shared/methods.dart';
 import 'package:maos/theme.dart';
 import 'package:maos/widgets/category.dart';
 import 'package:maos/widgets/hot_topic.dart';
 import 'package:maos/widgets/profilemenu.dart';
 import 'package:maos/widgets/publisher.dart';
-import 'package:maos/widgets/saved.dart';
+// import 'package:maos/widgets/saved.dart';
 import 'package:maos/widgets/top_picks.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,6 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
+  final GlobalKey<_HomeState> _homeKey = GlobalKey<_HomeState>();
 
   final List<Widget> _pages = [
     const Home(),
@@ -28,6 +34,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_currentIndex],
+      key: _homeKey,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (int index) {
@@ -36,9 +43,10 @@ class _HomePageState extends State<HomePage> {
           });
         },
         selectedItemColor: Colors.black,
-        selectedLabelStyle: semi.copyWith(fontSize: 11, color: Colors.black),
+        selectedLabelStyle:
+            semiboldTS.copyWith(fontSize: 11, color: Colors.black),
         // unselectedLabelStyle:
-        //     medium.copyWith(fontSize: 11, color: Colors.black),
+        //     mediumTS.copyWith(fontSize: 11, color: Colors.black),
         items: [
           BottomNavigationBarItem(
             icon: Image.asset(
@@ -90,8 +98,29 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({super.key});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  String selectedCategory = 'top';
+  String _getGreeting() {
+    var now = DateTime.now();
+    var hour = now.hour;
+
+    if (hour >= 5 && hour < 12) {
+      return 'Good Morning,';
+    } else if (hour >= 12 && hour < 17) {
+      return 'Good Afternoon,';
+    } else if (hour >= 17 && hour < 20) {
+      return 'Good Evening,';
+    } else {
+      return 'Good Night,';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +141,7 @@ class Home extends StatelessWidget {
                   width: 52,
                   height: 52,
                   decoration: BoxDecoration(
-                    border: Border.all(color: greyBlur40),
+                    border: Border.all(color: greyBlur20),
                     shape: BoxShape.circle,
                     image: const DecorationImage(
                       image: AssetImage('assets/images/profile.jpg'),
@@ -130,15 +159,15 @@ class Home extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Good Morning,',
-                        style: medium.copyWith(color: greyBlur60),
+                        _getGreeting(),
+                        style: mediumTS.copyWith(color: greyBlur60),
                       ),
                       const SizedBox(
                         height: 4,
                       ),
                       Text(
-                        'Emir Abiyyu 👋🏻',
-                        style: semi.copyWith(fontSize: 18),
+                        'Guest User 👋🏻',
+                        style: semiboldTS.copyWith(fontSize: 18),
                       )
                     ],
                   ),
@@ -172,7 +201,7 @@ class Home extends StatelessWidget {
                         child: Center(
                           child: Text(
                             '2',
-                            style: semi.copyWith(
+                            style: semiboldTS.copyWith(
                               color: Colors.white,
                               fontSize: 8,
                             ),
@@ -185,24 +214,38 @@ class Home extends StatelessWidget {
               ],
             ),
           ),
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-            child: TextFormField(
-              decoration: InputDecoration(
-                prefixIcon: Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: Image.asset(
-                    'assets/icons/search.png',
-                    scale: 2,
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SearchPage(),
+                ),
+              );
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+              child: AbsorbPointer(
+                child: TextFormField(
+                  enabled: false,
+                  decoration: InputDecoration(
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Image.asset(
+                        'assets/icons/search.png',
+                        scale: 2,
+                      ),
+                    ),
+                    hintText: 'Indonesian politics today',
+                    hintStyle:
+                        mediumTS.copyWith(color: greyBlur40, fontSize: 14),
+                    fillColor: Colors.white,
+                    filled: true,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(28),
+                        borderSide: BorderSide(color: greyBlur20)),
                   ),
                 ),
-                hintText: 'Indonesian politics today',
-                hintStyle: medium.copyWith(color: greyBlur40, fontSize: 14),
-                fillColor: Colors.white,
-                filled: true,
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(28),
-                    borderSide: BorderSide(color: greyBlur20)),
               ),
             ),
           ),
@@ -214,65 +257,53 @@ class Home extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      'Hot topic 🔥',
-                      style: semi.copyWith(fontSize: 18),
+                      'Hot topics 🔥',
+                      style: semiboldTS.copyWith(fontSize: 18),
                     ),
-                    const Spacer(),
-                    Text(
-                      'View All',
-                      style: semi.copyWith(fontSize: 12),
-                    )
+                    // const Spacer(),
+                    // Text(
+                    //   'View All',
+                    //   style: semiboldTS,
+                    // )
                   ],
                 ),
               ),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 16),
                 height: 320,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    const SizedBox(
-                      width: 16,
-                    ),
-                    HotTopic(
-                      imgUrl: 'assets/images/news1.jpg',
-                      title:
-                          'Pertamina Ajak Generasi Muda Jadi Agen Perubahan Lingkungan',
-                      publisher: 'CNN Indonesia',
-                      publisherLogoUrl: 'assets/images/logo_cnn.png',
-                      date: '17 Juni 2023',
-                      category: 'Economy',
-                      minRead: '4',
-                      action: () {
-                        Navigator.pushNamed(context, '/news');
-                      },
-                    ),
-                    HotTopic(
-                      imgUrl: 'assets/images/news3.jpg',
-                      title:
-                          'Manfaat Habatusauda bagi Kesehatan dan Cara Terbaik Mengonsumsinya',
-                      publisher: 'Kompas',
-                      publisherLogoUrl: 'assets/images/logo_kompas.png',
-                      date: '17 Juni 2023',
-                      category: 'Lifestyle',
-                      minRead: '7',
-                      action: () {
-                        Navigator.pushNamed(context, '/news');
-                      },
-                    ),
-                    HotTopic(
-                      imgUrl: 'assets/images/news5.jpg',
-                      title: 'Kebakaran di Jakarta Timur Hanguskan 16 Kambing',
-                      publisher: 'Tempo',
-                      publisherLogoUrl: 'assets/images/logo_tempo.png',
-                      date: '17 Juni 2023',
-                      category: 'Regional',
-                      minRead: '2',
-                      action: () {
-                        Navigator.pushNamed(context, '/news');
-                      },
-                    ),
-                  ],
+                child: BlocProvider(
+                  create: (context) => NewsBloc()..add(NewsHot()),
+                  child: BlocBuilder<NewsBloc, NewsState>(
+                    builder: (context, state) {
+                      if (state is NewsSuccess) {
+                        return ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            const SizedBox(
+                              width: 16,
+                            ),
+                            ...state.data.map((news) {
+                              return HotTopicCard(
+                                model: news,
+                                action: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => NewsPage(
+                                        model: news,
+                                        predicate: 'Top 10 Hot Topics 🔥',
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            }).toList()
+                          ],
+                        );
+                      }
+                      return const HotTopicLoading();
+                    },
+                  ),
                 ),
               )
             ],
@@ -281,7 +312,7 @@ class Home extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Text(
               'Top picks for you',
-              style: semi.copyWith(fontSize: 18),
+              style: semiboldTS.copyWith(fontSize: 18),
             ),
           ),
           Container(
@@ -295,33 +326,92 @@ class Home extends StatelessWidget {
                 ),
                 Category(
                   title: 'All',
-                  color: Colors.black,
-                  action: () {},
+                  isSelected: selectedCategory == newsCategory[0],
+                  action: () {
+                    setState(() {
+                      selectedCategory = newsCategory[0];
+                    });
+                  },
                 ),
                 Category(
-                  title: 'Politics',
-                  action: () {},
+                  title: newsCategory[1],
+                  isSelected: selectedCategory == newsCategory[1],
+                  action: () {
+                    setState(() {
+                      selectedCategory = newsCategory[1];
+                    });
+                  },
                 ),
                 Category(
-                  title: 'Lifestyle',
-                  action: () {},
+                  title: newsCategory[2],
+                  isSelected: selectedCategory == newsCategory[2],
+                  action: () {
+                    setState(() {
+                      selectedCategory = newsCategory[2];
+                    });
+                  },
                 ),
                 Category(
-                  title: 'Economy',
-                  action: () {},
+                  title: newsCategory[3],
+                  isSelected: selectedCategory == newsCategory[3],
+                  action: () {
+                    setState(() {
+                      selectedCategory = newsCategory[3];
+                    });
+                  },
                 ),
                 Category(
-                  title: 'Sport',
-                  action: () {},
+                  title: newsCategory[4],
+                  isSelected: selectedCategory == newsCategory[4],
+                  action: () {
+                    setState(() {
+                      selectedCategory = newsCategory[4];
+                    });
+                  },
                 ),
                 Category(
-                  title: 'Regional',
-                  action: () {},
+                  title: newsCategory[5],
+                  isSelected: selectedCategory == newsCategory[5],
+                  action: () {
+                    setState(() {
+                      selectedCategory = newsCategory[5];
+                    });
+                  },
+                ),
+                Category(
+                  title: newsCategory[6],
+                  isSelected: selectedCategory == newsCategory[6],
+                  action: () {
+                    setState(() {
+                      selectedCategory = newsCategory[6];
+                    });
+                  },
+                ),
+                Category(
+                  title: newsCategory[7],
+                  isSelected: selectedCategory == newsCategory[7],
+                  action: () {
+                    setState(() {
+                      selectedCategory = newsCategory[7];
+                    });
+                  },
+                ),
+                Category(
+                  title: newsCategory[8],
+                  isSelected: selectedCategory == newsCategory[8],
+                  action: () {
+                    setState(() {
+                      selectedCategory = newsCategory[8];
+                    });
+                  },
                 ),
               ],
             ),
           ),
-          const TopAll(),
+          ShowTopPicks(
+            key: ObjectKey(selectedCategory),
+            category: selectedCategory,
+          )
         ],
       ),
     );
@@ -340,7 +430,7 @@ class Following extends StatelessWidget {
             margin: const EdgeInsets.all(16),
             child: Text(
               'Following',
-              style: semi.copyWith(fontSize: 24),
+              style: semiboldTS.copyWith(fontSize: 24),
             ),
           ),
           Container(
@@ -349,12 +439,17 @@ class Following extends StatelessWidget {
               children: [
                 Text(
                   'Publisher',
-                  style: semi.copyWith(fontSize: 18),
+                  style: semiboldTS.copyWith(fontSize: 18),
                 ),
                 const Spacer(),
-                Text(
-                  'View All',
-                  style: semi.copyWith(fontSize: 12),
+                GestureDetector(
+                  onTap: () {
+                    showCustomSnackbar(context, null);
+                  },
+                  child: Text(
+                    'View All',
+                    style: semiboldTS,
+                  ),
                 )
               ],
             ),
@@ -372,29 +467,39 @@ class Following extends StatelessWidget {
                   width: 16,
                 ),
                 Publisher(
-                  name: 'CNN Indonesia',
-                  imgUrl: 'assets/images/logo_cnn.png',
-                  action: () {},
-                ),
-                Publisher(
-                  name: 'Kompas',
-                  imgUrl: 'assets/images/logo_kompas.png',
-                  action: () {},
-                ),
-                Publisher(
-                  name: 'Tempo.co',
-                  imgUrl: 'assets/images/logo_tempo.png',
-                  action: () {},
-                ),
-                Publisher(
-                  name: 'Lorem',
+                  name: 'Publisher Name',
                   imgUrl: 'assets/images/profile.jpg',
-                  action: () {},
+                  action: () {
+                    showCustomSnackbar(context, null);
+                  },
                 ),
                 Publisher(
-                  name: 'Ipsum',
+                  name: 'Publisher Name',
                   imgUrl: 'assets/images/profile.jpg',
-                  action: () {},
+                  action: () {
+                    showCustomSnackbar(context, null);
+                  },
+                ),
+                Publisher(
+                  name: 'Publisher Name',
+                  imgUrl: 'assets/images/profile.jpg',
+                  action: () {
+                    showCustomSnackbar(context, null);
+                  },
+                ),
+                Publisher(
+                  name: 'Publisher Name',
+                  imgUrl: 'assets/images/profile.jpg',
+                  action: () {
+                    showCustomSnackbar(context, null);
+                  },
+                ),
+                Publisher(
+                  name: 'Publisher Name',
+                  imgUrl: 'assets/images/profile.jpg',
+                  action: () {
+                    showCustomSnackbar(context, null);
+                  },
                 ),
               ],
             ),
@@ -403,79 +508,32 @@ class Following extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Text(
               'Recent Articles',
-              style: semi.copyWith(fontSize: 18),
+              style: semiboldTS.copyWith(fontSize: 18),
             ),
           ),
-          Column(
-            children: [
-              TopPicks(
-                title: 'Media Argentina Puji Sambutan Spesial Indonesia',
-                publisher: 'CNN Indonesia',
-                date: '05 Juni 2023',
-                imgUrl: 'assets/images/news2.jpg',
-                action: () {
-                  Navigator.pushNamed(context, '/news');
-                },
-              ),
-              TopPicks(
-                title:
-                    'Air Sungai Bengawan Solo Tercemar Limbah Industri Minuman Beralkohol, Berbau Dan Berwarna Hitam',
-                publisher: 'Kompas',
-                date: '08 Juni 2023',
-                imgUrl: 'assets/images/news4.jpg',
-                action: () {
-                  Navigator.pushNamed(context, '/news');
-                },
-              ),
-              TopPicks(
-                title:
-                    'Elektabilitas Anies Salip Ganjar dan Pepet Prabowo di Survei Terbaru IPO',
-                publisher: 'Tempo',
-                date: '08 Juni 2023',
-                imgUrl: 'assets/images/news6.jpg',
-                action: () {
-                  Navigator.pushNamed(context, '/news');
-                },
-              ),
-              TopPicks(
-                title:
-                    'Pertamina Ajak Generasi Muda Jadi Agen Perubahan Lingkungan',
-                publisher: 'CNN Indonesia',
-                date: '05 Juni 2023',
-                imgUrl: 'assets/images/news1.jpg',
-                action: () {
-                  Navigator.pushNamed(context, '/news');
-                },
-              ),
-              TopPicks(
-                title:
-                    'Manfaat Habatusauda bagi Kesehatan dan Cara Terbaik Mengonsumsinya',
-                publisher: 'Kompas',
-                date: '08 Juni 2023',
-                imgUrl: 'assets/images/news3.jpg',
-                action: () {
-                  Navigator.pushNamed(context, '/news');
-                },
-              ),
-              TopPicks(
-                title: 'Kebakaran di Jakarta Timur Hanguskan 16 Kambing',
-                publisher: 'Tempo',
-                date: '08 Juni 2023',
-                imgUrl: 'assets/images/news5.jpg',
-                action: () {
-                  Navigator.pushNamed(context, '/news');
-                },
-              ),
-              TopPicks(
-                title: 'Media Argentina Puji Sambutan Spesial Indonesia',
-                publisher: 'CNN Indonesia',
-                date: '05 Juni 2023',
-                imgUrl: 'assets/images/news2.jpg',
-                action: () {
-                  Navigator.pushNamed(context, '/news');
-                },
-              ),
-            ],
+          BlocProvider(
+            create: (context) => NewsBloc()..add(const NewsGet('top')),
+            child: BlocBuilder<NewsBloc, NewsState>(
+              builder: (context, state) {
+                if (state is NewsSuccess) {
+                  return Column(
+                      children: state.data.map((news) {
+                    return TopPicksCard(
+                      model: news,
+                      action: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NewsPage(model: news),
+                          ),
+                        );
+                      },
+                    );
+                  }).toList());
+                }
+                return const TopPicksLoading();
+              },
+            ),
           ),
         ],
       ),
@@ -489,79 +547,90 @@ class Saved extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView(
         children: [
-          Container(
-            margin: const EdgeInsets.all(16),
-            child: Text(
-              'Saved',
-              style: semi.copyWith(
-                fontSize: 24,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                margin: const EdgeInsets.all(16),
+                child: Text(
+                  'Saved',
+                  style: semiboldTS.copyWith(
+                    fontSize: 24,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
               ),
-              textAlign: TextAlign.left,
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.only(left: 16, top: 4),
-            child: Wrap(
-              runSpacing: 16,
-              children: [
-                SavedCard(
-                  title: 'Kebakaran di Jakarta Timur Hanguskan 16 Kambing',
-                  imgUrl: 'assets/images/news5.jpg',
-                  category: 'Regional',
-                  publisher: 'Tempo',
-                  date: '17 Juni 2023',
-                  action: () {
-                    Navigator.pushNamed(context, '/news');
-                  },
+              Container(
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
                 ),
-                SavedCard(
-                  title:
-                      'Manfaat Habatusauda bagi Kesehatan dan Cara Terbaik Mengonsumsinya',
-                  imgUrl: 'assets/images/news3.jpg',
-                  category: 'Lifestyle',
-                  publisher: 'Kompas',
-                  date: '17 Juni 2023',
-                  action: () {
-                    Navigator.pushNamed(context, '/news');
-                  },
+                child: const Center(
+                  child: Text('This feature is coming soon!'),
                 ),
-                SavedCard(
-                  title: 'Media Argentina Puji Sambutan Spesial Indonesia',
-                  imgUrl: 'assets/images/news2.jpg',
-                  category: 'Sport',
-                  publisher: 'CNN Indonesia',
-                  date: '17 Juni 2023',
-                  action: () {
-                    Navigator.pushNamed(context, '/news');
-                  },
-                ),
-                SavedCard(
-                  title:
-                      'Pertamina Ajak Generasi Muda Jadi Agen Perubahan Lingkungan',
-                  imgUrl: 'assets/images/news1.jpg',
-                  category: 'Economy',
-                  publisher: 'CNN Indonesia',
-                  date: '17 Juni 2023',
-                  action: () {
-                    Navigator.pushNamed(context, '/news');
-                  },
-                ),
-                SavedCard(
-                  title:
-                      'Elektabilitas Anies Salip Ganjar dan Pepet Prabowo di Survei Terbaru IPO',
-                  imgUrl: 'assets/images/news6.jpg',
-                  category: 'Politics',
-                  publisher: 'Tempo',
-                  date: '17 Juni 2023',
-                  action: () {
-                    Navigator.pushNamed(context, '/news');
-                  },
-                ),
-              ],
-            ),
+                // child: Wrap(
+                //   spacing: 16,
+                //   runSpacing: 16,
+                //   children: [
+                //     SavedCard(
+                //       title: 'Kebakaran di Jakarta Timur Hanguskan 16 Kambing',
+                //       imgUrl: 'assets/images/news1.jpg',
+                //       category: 'Regional',
+                //       publisher: 'Tempo',
+                //       date: '17 Juni 2023',
+                //       action: () {
+                //         showCustomSnackbar(context, null);
+                //       },
+                //     ),
+                //     SavedCard(
+                //       title:
+                //           'Manfaat Habatusauda bagi Kesehatan dan Cara Terbaik Mengonsumsinya',
+                //       imgUrl: 'assets/images/news1.jpg',
+                //       category: 'Lifestyle',
+                //       publisher: 'Kompas',
+                //       date: '17 Juni 2023',
+                //       action: () {
+                //         showCustomSnackbar(context, null);
+                //       },
+                //     ),
+                //     SavedCard(
+                //       title: 'Media Argentina Puji Sambutan Spesial Indonesia',
+                //       imgUrl: 'assets/images/news1.jpg',
+                //       category: 'Sport',
+                //       publisher: 'CNN Indonesia',
+                //       date: '17 Juni 2023',
+                //       action: () {
+                //         showCustomSnackbar(context, null);
+                //       },
+                //     ),
+                //     SavedCard(
+                //       title:
+                //           'Pertamina Ajak Generasi Muda Jadi Agen Perubahan Lingkungan',
+                //       imgUrl: 'assets/images/news1.jpg',
+                //       category: 'Economy',
+                //       publisher: 'CNN Indonesia',
+                //       date: '17 Juni 2023',
+                //       action: () {
+                //         showCustomSnackbar(context, null);
+                //       },
+                //     ),
+                //     SavedCard(
+                //       title:
+                //           'Elektabilitas Anies Salip Ganjar dan Pepet Prabowo di Survei Terbaru IPO',
+                //       imgUrl: 'assets/images/news1.jpg',
+                //       category: 'Politics',
+                //       publisher: 'Tempo',
+                //       date: '17 Juni 2023',
+                //       action: () {
+                //         showCustomSnackbar(context, null);
+                //       },
+                //     ),
+                //   ],
+                // ),
+              ),
+            ],
           ),
         ],
       ),
@@ -591,9 +660,10 @@ class Profile extends StatelessWidget {
                   Container(
                     height: 120,
                     width: 120,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: greyBlur20),
                       shape: BoxShape.circle,
-                      image: DecorationImage(
+                      image: const DecorationImage(
                         fit: BoxFit.cover,
                         image: AssetImage(
                           'assets/images/profile.jpg',
@@ -607,13 +677,13 @@ class Profile extends StatelessWidget {
                   Container(
                     margin: const EdgeInsets.symmetric(vertical: 10),
                     child: Text(
-                      'Emir Abiyyu',
-                      style: semi,
+                      'Guest User',
+                      style: semiboldTS.copyWith(fontSize: 20),
                     ),
                   ),
                   Text(
                     'Joined July 2022',
-                    style: medium.copyWith(
+                    style: mediumTS.copyWith(
                       color: greyColor,
                     ),
                   ),
@@ -627,30 +697,38 @@ class Profile extends StatelessWidget {
                         ProfileMenu(
                           title: 'Edit Profile',
                           iconUrl: 'assets/icons/user_edit.png',
-                          action: () {},
+                          action: () {
+                            showCustomSnackbar(context, null);
+                          },
                         ),
                         ProfileMenu(
                           title: 'My Rewards',
                           iconUrl: 'assets/icons/user_rewards.png',
                           badge: 2,
-                          action: () {},
+                          action: () {
+                            showCustomSnackbar(context, null);
+                          },
                         ),
                         ProfileMenu(
                           title: 'Help Center',
                           iconUrl: 'assets/icons/user_help.png',
-                          action: () {},
+                          action: () {
+                            showCustomSnackbar(context, null);
+                          },
                         ),
                         ProfileMenu(
                           title: 'Log Out',
                           iconUrl: 'assets/icons/user_logout.png',
-                          action: () {},
+                          action: () {
+                            showCustomSnackbar(context, null);
+                          },
                         ),
                       ],
                     ),
                   ),
                   Text(
                     'Last Login : Just Now',
-                    style: medium.copyWith(
+                    style: mediumTS.copyWith(
                       color: greyBlur60,
                       fontSize: 10,
                     ),
@@ -665,43 +743,36 @@ class Profile extends StatelessWidget {
   }
 }
 
-class TopAll extends StatelessWidget {
-  const TopAll({super.key});
+class ShowTopPicks extends StatelessWidget {
+  final String category;
+  const ShowTopPicks({super.key, required this.category});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TopPicks(
-          title: 'Media Argentina Puji Sambutan Spesial Indonesia',
-          publisher: 'CNN Indonesia',
-          date: '17 Juni 2023',
-          imgUrl: 'assets/images/news2.jpg',
-          action: () {
-            Navigator.pushNamed(context, '/news');
-          },
-        ),
-        TopPicks(
-          title:
-              'Manfaat Habatusauda bagi Kesehatan dan Cara Terbaik Mengonsumsinya',
-          publisher: 'Kompas',
-          date: '17 Juni 2023',
-          imgUrl: 'assets/images/news3.jpg',
-          action: () {
-            Navigator.pushNamed(context, '/news');
-          },
-        ),
-        TopPicks(
-          title:
-              'Air Sungai Bengawan Solo Tercemar Limbah Industri Minuman Beralkohol, Berbau Dan Berwarna Hitam',
-          publisher: 'Kompas',
-          date: '17 Juni 2023',
-          imgUrl: 'assets/images/news4.jpg',
-          action: () {
-            Navigator.pushNamed(context, '/news');
-          },
-        ),
-      ],
+    return BlocProvider(
+      create: (context) => NewsBloc()..add(NewsGet(category)),
+      child: BlocBuilder<NewsBloc, NewsState>(
+        builder: (context, state) {
+          if (state is NewsSuccess) {
+            return Column(
+              children: state.data.map((news) {
+                return TopPicksCard(
+                  model: news,
+                  action: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NewsPage(model: news),
+                      ),
+                    );
+                  },
+                );
+              }).toList(),
+            );
+          }
+          return const TopPicksLoading();
+        },
+      ),
     );
   }
 }

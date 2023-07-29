@@ -1,76 +1,132 @@
+import 'package:card_loading/card_loading.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:maos/shared/methods.dart';
 import 'package:maos/theme.dart';
+import 'package:maos/models/news_model.dart';
 
 class Recommend extends StatelessWidget {
-  final String title, imgUrl, minRead, date;
-  const Recommend(
-      {super.key,
-      required this.title,
-      required this.imgUrl,
-      required this.minRead,
-      required this.date});
+  final NewsModel model;
+  final VoidCallback? action;
+  const Recommend({super.key, required this.model, this.action});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(right: 10),
-      width: 170,
-      child: Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.only(bottom: 6),
-            height: 125,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              image: DecorationImage(
-                image: AssetImage(imgUrl),
-                fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: action,
+      child: Container(
+        margin: const EdgeInsets.only(right: 10),
+        width: 170,
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.only(bottom: 6),
+              height: 125,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: greyBlur20),
+                image: DecorationImage(
+                  image: model.imageUrl == null
+                      ? const AssetImage('assets/images/news1.jpg')
+                      : NetworkImage(
+                          model.imageUrl.toString(),
+                        ) as ImageProvider,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
-          Text(
-            title,
-            style: semi.copyWith(
-              fontSize: 12,
-              height: 1.44,
+            Text(
+              model.title.toString(),
+              style: semiboldTS.copyWith(height: 1.44),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
             ),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 2,
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Row(
-            children: [
-              minRead == '1'
-                  ? Text(
-                      '1 min read',
-                      style: medium.copyWith(fontSize: 10, color: greyBlur40),
-                    )
-                  : Text(
-                      '$minRead mins read',
-                      style: medium.copyWith(fontSize: 10, color: greyBlur40),
-                    ),
-              const SizedBox(
-                width: 6,
-              ),
-              Container(
-                height: 4,
-                width: 4,
-                decoration:
-                    BoxDecoration(shape: BoxShape.circle, color: greyBlur40),
-              ),
-              const SizedBox(
-                width: 6,
-              ),
-              Text(
-                date,
-                style: medium.copyWith(fontSize: 10, color: greyBlur40),
-              ),
-            ],
-          )
-        ],
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              children: [
+                Text(
+                  capitalizeFirstLetter(model.sourceId.toString()),
+                  style: mediumTS.copyWith(fontSize: 10),
+                ),
+                const SizedBox(
+                  width: 6,
+                ),
+                Container(
+                  height: 4,
+                  width: 4,
+                  decoration:
+                      BoxDecoration(shape: BoxShape.circle, color: greyBlur40),
+                ),
+                const SizedBox(
+                  width: 6,
+                ),
+                Text(
+                  DateFormat('d MMMM y').format(
+                    DateTime.parse(model.pubDate.toString()),
+                  ),
+                  style: mediumTS.copyWith(fontSize: 10, color: greyBlur60),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
+    );
+  }
+}
+
+// Skeleton Loading
+class RecommendLoading extends StatelessWidget {
+  const RecommendLoading({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        ...List.generate(
+          3,
+          (_) => Container(
+            margin: const EdgeInsets.only(right: 10),
+            width: 170,
+            child: Column(
+              children: [
+                CardLoading(
+                  height: 125,
+                  margin: const EdgeInsets.only(bottom: 6),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                CardLoading(
+                  height: 12,
+                  margin: const EdgeInsets.only(bottom: 6),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                CardLoading(
+                  height: 12,
+                  margin: const EdgeInsets.only(bottom: 10),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                Row(
+                  children: [
+                    CardLoading(
+                      height: 12,
+                      width: 50,
+                      margin: const EdgeInsets.only(right: 12),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    CardLoading(
+                      height: 12,
+                      width: 70,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

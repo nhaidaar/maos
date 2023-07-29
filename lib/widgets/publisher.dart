@@ -10,29 +10,31 @@ class Publisher extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: action,
-        child: Container(
-          margin: const EdgeInsets.only(right: 18),
-          child: Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.only(bottom: 6),
-                height: 74,
-                width: 74,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: AssetImage(imgUrl),
-                  ),
+      onTap: action,
+      child: Container(
+        margin: const EdgeInsets.only(right: 18),
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.only(bottom: 6),
+              height: 74,
+              width: 74,
+              decoration: BoxDecoration(
+                border: Border.all(color: greyBlur20),
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: AssetImage(imgUrl),
                 ),
               ),
-              Text(
-                name,
-                style: semi.copyWith(fontSize: 12),
-              )
-            ],
-          ),
-        ));
+            ),
+            Text(
+              name,
+              style: semiboldTS,
+            )
+          ],
+        ),
+      ),
+    );
   }
 }

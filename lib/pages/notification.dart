@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:maos/shared/methods.dart';
 import 'package:maos/theme.dart';
 import 'package:maos/widgets/notifications.dart';
 
@@ -35,7 +36,7 @@ class NotificationPage extends StatelessWidget {
         ),
         title: Text(
           'Notification',
-          style: semi.copyWith(color: Colors.black),
+          style: semiboldTS.copyWith(color: Colors.black, fontSize: 20),
         ),
         centerTitle: true,
       ),
@@ -43,29 +44,29 @@ class NotificationPage extends StatelessWidget {
         children: [
           CustomNotification(
             title: 'Kebakaran di Jakarta Timur Hanguskan 16 Kambing',
-            imgUrl: 'assets/images/news5.jpg',
+            imgUrl: 'assets/images/news1.jpg',
             time: '6 mins ago',
             action: () {
-              Navigator.pushNamed(context, '/news');
+              showCustomSnackbar(context, null);
             },
             isUnread: true,
           ),
           CustomNotification(
             title:
                 'Manfaat Habatusauda bagi Kesehatan dan Cara Terbaik Mengonsumsinya',
-            imgUrl: 'assets/images/news3.jpg',
+            imgUrl: 'assets/images/news1.jpg',
             time: '17 mins ago',
             action: () {
-              Navigator.pushNamed(context, '/news');
+              showCustomSnackbar(context, null);
             },
             isUnread: true,
           ),
           CustomNotification(
             title: 'Media Argentina Puji Sambutan Spesial Indonesia',
-            imgUrl: 'assets/images/news2.jpg',
+            imgUrl: 'assets/images/news1.jpg',
             time: '22 mins ago',
             action: () {
-              Navigator.pushNamed(context, '/news');
+              showCustomSnackbar(context, null);
             },
             isUnread: false,
           ),
@@ -75,7 +76,7 @@ class NotificationPage extends StatelessWidget {
             imgUrl: 'assets/images/news1.jpg',
             time: '54 mins ago',
             action: () {
-              Navigator.pushNamed(context, '/news');
+              showCustomSnackbar(context, null);
             },
             isUnread: false,
           ),

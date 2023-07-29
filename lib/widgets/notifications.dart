@@ -36,6 +36,7 @@ class CustomNotification extends StatelessWidget {
               width: 70,
               height: 70,
               decoration: BoxDecoration(
+                border: Border.all(color: greyBlur20),
                 borderRadius: BorderRadius.circular(8),
                 image: DecorationImage(
                   image: AssetImage(imgUrl),
@@ -55,13 +56,13 @@ class CustomNotification extends StatelessWidget {
                           title,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
-                          style: semi.copyWith(fontSize: 14),
+                          style: semiboldTS.copyWith(fontSize: 14),
                         )
                       : Text(
                           title,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
-                          style: regular.copyWith(
+                          style: regularTS.copyWith(
                             fontSize: 14,
                           ),
                         ),
@@ -80,15 +81,15 @@ class CustomNotification extends StatelessWidget {
                             ),
                             Text(
                               time,
-                              style: medium.copyWith(
+                              style: mediumTS.copyWith(
                                   fontSize: 11, color: greyBlur60),
                             ),
                           ],
                         )
                       : Text(
                           time,
-                          style:
-                              medium.copyWith(fontSize: 11, color: greyBlur60),
+                          style: mediumTS.copyWith(
+                              fontSize: 11, color: greyBlur60),
                         ),
                 ],
               ),

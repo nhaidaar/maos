@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:maos/shared/methods.dart';
 import 'package:maos/theme.dart';
 
 class Category extends StatelessWidget {
   final String title;
-  final Color color;
-  final VoidCallback? action;
-  const Category(
-      {super.key, required this.title, this.color = Colors.white, this.action});
+  final bool isSelected;
+  final VoidCallback action;
+  const Category({
+    super.key,
+    required this.title,
+    required this.action,
+    required this.isSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,17 +22,19 @@ class Category extends StatelessWidget {
         height: 35,
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         decoration: BoxDecoration(
-            border: Border.all(
-              color: color == Colors.white ? greyBlur20 : Colors.black,
-            ),
-            color: color,
-            borderRadius: BorderRadius.circular(1000)),
+          border: Border.all(
+            color: isSelected ? Colors.black : greyBlur20,
+          ),
+          color: isSelected ? Colors.black : Colors.white,
+          borderRadius: BorderRadius.circular(1000),
+        ),
         child: FittedBox(
           child: Text(
-            title,
-            style: medium.copyWith(
-                fontSize: 12,
-                color: color == Colors.white ? Colors.black : Colors.white),
+            capitalizeFirstLetter(title),
+            style: mediumTS.copyWith(
+              fontSize: 12,
+              color: isSelected ? Colors.white : Colors.black,
+            ),
           ),
         ),
       ),

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>446716266560-jr186u19aq4kpqiharblph66acrkurns.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.446716266560-jr186u19aq4kpqiharblph66acrkurns</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>446716266560-q1mg8eiulcdvpl9990q2e5uac15jcgq1.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAttW9Ed7w_KQ3Kn0_roOTEUeRuNwAqY8I</string>
+	<key>GCM_SENDER_ID</key>
+	<string>446716266560</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.maos</string>
+	<key>PROJECT_ID</key>
+	<string>nhaidaar-maos</string>
+	<key>STORAGE_BUCKET</key>
+	<string>nhaidaar-maos.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:446716266560:ios:05942e43a70826f79bb7a5</string>
+</dict>
+</plist>

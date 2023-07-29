@@ -16,15 +16,16 @@ class SavedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final deviceWidth = MediaQuery.of(context).size.width;
+
     return GestureDetector(
       onTap: action,
       child: Stack(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            margin: const EdgeInsets.only(right: 16),
-            height: 164,
-            width: 164,
+            height: deviceWidth / 2 - 24,
+            width: deviceWidth / 2 - 24,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
@@ -37,22 +38,21 @@ class SavedCard extends StatelessWidget {
           ),
           Container(
             padding: const EdgeInsets.all(10),
-            height: 164,
-            width: 164,
+            height: deviceWidth / 2 - 24,
+            width: deviceWidth / 2 - 24,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8.0),
-              gradient: LinearGradient(
+              gradient: const LinearGradient(
                 begin: Alignment.center,
                 end: Alignment.bottomCenter,
-                colors: [Colors.transparent, Colors.black.withOpacity(0.8)],
+                colors: [Colors.transparent, Colors.black],
               ),
             ),
           ),
           Container(
             padding: const EdgeInsets.all(10),
-            // margin: const EdgeInsets.all(12),
-            height: 164,
-            width: 164,
+            height: deviceWidth / 2 - 24,
+            width: deviceWidth / 2 - 24,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -66,15 +66,16 @@ class SavedCard extends StatelessWidget {
                   child: FittedBox(
                     child: Text(
                       category,
-                      style: semi.copyWith(fontSize: 9),
+                      style: semiboldTS.copyWith(fontSize: 9),
                     ),
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(top: 60),
+                  margin: EdgeInsets.only(top: deviceWidth / 5.4),
                   child: Text(
                     title,
-                    style: semi.copyWith(color: Colors.white, fontSize: 14),
+                    style:
+                        semiboldTS.copyWith(color: Colors.white, fontSize: 14),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
                   ),
@@ -86,13 +87,13 @@ class SavedCard extends StatelessWidget {
                       Text(
                         'by $publisher',
                         style:
-                            medium.copyWith(fontSize: 8, color: Colors.white),
+                            mediumTS.copyWith(fontSize: 8, color: Colors.white),
                       ),
                       const Spacer(),
                       Text(
                         date,
                         style:
-                            medium.copyWith(fontSize: 8, color: Colors.white),
+                            mediumTS.copyWith(fontSize: 8, color: Colors.white),
                       )
                     ],
                   ),

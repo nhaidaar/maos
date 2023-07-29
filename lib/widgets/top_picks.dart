@@ -1,16 +1,16 @@
+import 'package:card_loading/card_loading.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:maos/models/news_model.dart';
+import 'package:maos/shared/methods.dart';
 import 'package:maos/theme.dart';
 
-class TopPicks extends StatelessWidget {
-  final String title, publisher, minRead, date, imgUrl;
+class TopPicksCard extends StatelessWidget {
+  final NewsModel model;
   final VoidCallback? action;
-  const TopPicks({
+  const TopPicksCard({
     super.key,
-    required this.title,
-    required this.publisher,
-    this.minRead = '5',
-    required this.date,
-    required this.imgUrl,
+    required this.model,
     this.action,
   });
 
@@ -27,9 +27,13 @@ class TopPicks extends StatelessWidget {
               width: 70,
               height: 70,
               decoration: BoxDecoration(
+                border: Border.all(color: greyBlur20),
                 borderRadius: BorderRadius.circular(8),
                 image: DecorationImage(
-                  image: AssetImage(imgUrl),
+                  image: model.imageUrl == null
+                      ? const AssetImage('assets/images/news1.jpg')
+                      : NetworkImage(model.imageUrl.toString())
+                          as ImageProvider,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -38,8 +42,8 @@ class TopPicks extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    title,
-                    style: semi.copyWith(fontSize: 14),
+                    replaceSpecialCharacters(model.title.toString()),
+                    style: semiboldTS.copyWith(fontSize: 14),
                     textAlign: TextAlign.justify,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
@@ -50,8 +54,13 @@ class TopPicks extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        publisher,
-                        style: medium.copyWith(fontSize: 11),
+                        'Published by ',
+                        style:
+                            mediumTS.copyWith(fontSize: 11, color: greyBlur60),
+                      ),
+                      Text(
+                        capitalizeFirstLetter(model.sourceId.toString()),
+                        style: mediumTS.copyWith(fontSize: 11),
                       ),
                       Container(
                         margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -61,19 +70,11 @@ class TopPicks extends StatelessWidget {
                             shape: BoxShape.circle, color: greyWhiteColor),
                       ),
                       Text(
-                        '$minRead mins read',
-                        style: medium.copyWith(fontSize: 11, color: greyBlur60),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 8),
-                        height: 5,
-                        width: 5,
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle, color: greyWhiteColor),
-                      ),
-                      Text(
-                        date,
-                        style: medium.copyWith(fontSize: 11, color: greyBlur60),
+                        DateFormat('d MMMM y').format(
+                          DateTime.parse(model.pubDate.toString()),
+                        ),
+                        style:
+                            mediumTS.copyWith(fontSize: 11, color: greyBlur60),
                       ),
                     ],
                   )
@@ -83,6 +84,66 @@ class TopPicks extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// Skeleton Loading
+class TopPicksLoading extends StatelessWidget {
+  const TopPicksLoading({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ...List.generate(
+          5,
+          (_) => Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                CardLoading(
+                  height: 70,
+                  width: 70,
+                  margin: const EdgeInsets.only(right: 10),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      CardLoading(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        height: 12,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      CardLoading(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        height: 12,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      Row(
+                        children: [
+                          CardLoading(
+                            margin: const EdgeInsets.only(right: 12),
+                            height: 12,
+                            width: 140,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          CardLoading(
+                            height: 12,
+                            width: 70,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
