@@ -32,7 +32,6 @@ dependencies:
   card_loading: ^0.3.0
   cupertino_icons: ^1.0.2
   equatable: ^2.0.5
-  firebase_core: ^2.15.0
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.3
