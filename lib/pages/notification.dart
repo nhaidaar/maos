@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:maos/shared/methods.dart';
 import 'package:maos/theme.dart';
 import 'package:maos/widgets/notifications.dart';
 
@@ -47,7 +46,7 @@ class NotificationPage extends StatelessWidget {
             imgUrl: 'assets/images/news1.jpg',
             time: '6 mins ago',
             action: () {
-              showCustomSnackbar(context, null);
+              // showCustomSnackbar(context, null);
             },
             isUnread: true,
           ),
@@ -57,7 +56,7 @@ class NotificationPage extends StatelessWidget {
             imgUrl: 'assets/images/news1.jpg',
             time: '17 mins ago',
             action: () {
-              showCustomSnackbar(context, null);
+              // showCustomSnackbar(context, null);
             },
             isUnread: true,
           ),
@@ -66,7 +65,7 @@ class NotificationPage extends StatelessWidget {
             imgUrl: 'assets/images/news1.jpg',
             time: '22 mins ago',
             action: () {
-              showCustomSnackbar(context, null);
+              // showCustomSnackbar(context, null);
             },
             isUnread: false,
           ),
@@ -76,7 +75,7 @@ class NotificationPage extends StatelessWidget {
             imgUrl: 'assets/images/news1.jpg',
             time: '54 mins ago',
             action: () {
-              showCustomSnackbar(context, null);
+              // showCustomSnackbar(context, null);
             },
             isUnread: false,
           ),

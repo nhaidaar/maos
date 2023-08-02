@@ -1,8 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:maos/blocs/news/news_bloc.dart';
 import 'package:maos/models/news_model.dart';
+import 'package:maos/services/news_services.dart';
 import 'package:maos/shared/methods.dart';
 import 'package:maos/theme.dart';
 import 'package:maos/widgets/recommend.dart';
@@ -21,6 +25,9 @@ class NewsPage extends StatefulWidget {
 }
 
 class _NewsPageState extends State<NewsPage> {
+  bool followed = false;
+  bool saved = false;
+
   final ScrollController _scrollController = ScrollController();
   void _scrollToTop() {
     _scrollController.animateTo(
@@ -49,6 +56,8 @@ class _NewsPageState extends State<NewsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -78,10 +87,23 @@ class _NewsPageState extends State<NewsPage> {
         ),
         actions: [
           GestureDetector(
-            onTap: () {
+            onTap: () async {
+              if (user != null) {
+                bool isFollowed = await NewsService()
+                    .checkFollowedPublisher(widget.model.sourceId.toString());
+                bool isSaved = await NewsService().checkSavedNews(widget.model);
+                setState(() {
+                  followed = isFollowed;
+                  saved = isSaved;
+                });
+              }
               showDialog(
                 context: context,
-                builder: (context) => const NotificationAction(),
+                builder: (context) => NotificationAction(
+                  model: widget.model,
+                  followed: followed,
+                  saved: saved,
+                ),
               );
             },
             child: Container(
@@ -176,13 +198,18 @@ class _NewsPageState extends State<NewsPage> {
                 ],
               ),
             ),
+            const SizedBox(
+              height: 8,
+            ),
             Container(
-              margin: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+              margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.only(left: 10),
               decoration: const BoxDecoration(
                 border: Border(
                   left: BorderSide(
-                      color: Colors.black, width: 4, style: BorderStyle.solid),
+                    color: Colors.black,
+                    width: 3,
+                  ),
                 ),
               ),
               child: widget.model.description == null
@@ -197,6 +224,9 @@ class _NewsPageState extends State<NewsPage> {
                       style: mediumTS.copyWith(fontSize: 13, height: 1.358),
                       textAlign: TextAlign.justify,
                     ),
+            ),
+            const SizedBox(
+              height: 18,
             ),
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -314,10 +344,18 @@ class _NewsPageState extends State<NewsPage> {
 }
 
 class NotificationAction extends StatelessWidget {
-  const NotificationAction({super.key});
+  final NewsModel model;
+  final bool followed, saved;
+  const NotificationAction(
+      {super.key,
+      required this.model,
+      required this.followed,
+      required this.saved});
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
     return AlertDialog(
       alignment: Alignment.topRight,
       insetPadding: EdgeInsets.only(
@@ -332,8 +370,30 @@ class NotificationAction extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             GestureDetector(
-              onTap: () {
-                showCustomSnackbar(context, null);
+              onTap: () async {
+                if (user != null) {
+                  if (!followed) {
+                    await NewsService()
+                        .followPublisher(model.sourceId.toString());
+                    showSnackbar(
+                        context,
+                        'You are now following \'${capitalizeFirstLetter(model.sourceId!)}\' !',
+                        false);
+                    Navigator.pop(context);
+                  } else {
+                    await NewsService()
+                        .unfollowPublisher(model.sourceId.toString());
+                    showSnackbar(
+                        context,
+                        'You are no longer following \'${capitalizeFirstLetter(model.sourceId!)}\' !',
+                        false);
+                    Navigator.pop(context);
+                  }
+                } else {
+                  showSnackbar(context,
+                      'You need to be logged in to use this feature!', true);
+                  Navigator.pop(context);
+                }
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -343,26 +403,42 @@ class NotificationAction extends StatelessWidget {
                     bottom: BorderSide(color: greyBlur20),
                   ),
                 ),
-                child: Row(
-                  children: [
-                    Image.asset(
-                      'assets/icons/news_follow.png',
-                      scale: 2.5,
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Text(
-                      'Follow Publication',
-                      style: actionButton,
-                    ),
-                  ],
-                ),
+                child: !followed
+                    ? Row(
+                        children: [
+                          Image.asset(
+                            'assets/icons/news_follow.png',
+                            scale: 2.5,
+                          ),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Text(
+                            'Follow Publisher',
+                            style: actionButton,
+                          ),
+                        ],
+                      )
+                    : Row(
+                        children: [
+                          Image.asset(
+                            'assets/icons/news_follow.png',
+                            scale: 2.5,
+                          ),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Text(
+                            'Unfollow Publisher',
+                            style: actionButton,
+                          ),
+                        ],
+                      ),
               ),
             ),
             GestureDetector(
               onTap: () {
-                showCustomSnackbar(context, null);
+                // showCustomSnackbar(context, null);
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -390,8 +466,22 @@ class NotificationAction extends StatelessWidget {
               ),
             ),
             GestureDetector(
-              onTap: () {
-                showCustomSnackbar(context, null);
+              onTap: () async {
+                if (user != null) {
+                  if (!saved) {
+                    await NewsService().saveNews(model);
+                    showSnackbar(context, 'Article saved successfully!', false);
+                    Navigator.pop(context);
+                  } else {
+                    await NewsService().deleteSavedNews(model);
+                    showSnackbar(context, 'Article unsaved!', false);
+                    Navigator.pop(context);
+                  }
+                } else {
+                  showSnackbar(context,
+                      'You need to be logged in to use this feature!', true);
+                  Navigator.pop(context);
+                }
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -401,26 +491,42 @@ class NotificationAction extends StatelessWidget {
                     bottom: BorderSide(color: greyBlur20),
                   ),
                 ),
-                child: Row(
-                  children: [
-                    Image.asset(
-                      'assets/icons/news_save.png',
-                      scale: 2.5,
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Text(
-                      'Save article',
-                      style: actionButton,
-                    ),
-                  ],
-                ),
+                child: !saved
+                    ? Row(
+                        children: [
+                          Image.asset(
+                            'assets/icons/news_save.png',
+                            scale: 2.5,
+                          ),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Text(
+                            'Save article',
+                            style: actionButton,
+                          ),
+                        ],
+                      )
+                    : Row(
+                        children: [
+                          Image.asset(
+                            'assets/icons/news_save.png',
+                            scale: 2.5,
+                          ),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Text(
+                            'Unsaved article',
+                            style: actionButton,
+                          ),
+                        ],
+                      ),
               ),
             ),
             GestureDetector(
               onTap: () {
-                showCustomSnackbar(context, null);
+                // showCustomSnackbar(context, null);
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),

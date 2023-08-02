@@ -1,6 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:maos/blocs/auth/auth_bloc.dart';
 import 'package:maos/blocs/news/news_bloc.dart';
+import 'package:maos/models/news_model.dart';
 import 'package:maos/pages/news.dart';
 import 'package:maos/pages/search.dart';
 import 'package:maos/shared/methods.dart';
@@ -9,6 +14,7 @@ import 'package:maos/widgets/category.dart';
 import 'package:maos/widgets/hot_topic.dart';
 import 'package:maos/widgets/profilemenu.dart';
 import 'package:maos/widgets/publisher.dart';
+import 'package:maos/widgets/saved.dart';
 // import 'package:maos/widgets/saved.dart';
 import 'package:maos/widgets/top_picks.dart';
 
@@ -32,67 +38,75 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[_currentIndex],
-      key: _homeKey,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (int index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        selectedItemColor: Colors.black,
-        selectedLabelStyle:
-            semiboldTS.copyWith(fontSize: 11, color: Colors.black),
-        // unselectedLabelStyle:
-        //     mediumTS.copyWith(fontSize: 11, color: Colors.black),
-        items: [
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'assets/icons/home_outlined.png',
-              scale: 2,
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is UnAuthenticated) {
+          // Navigate to the sign in screen when the user Signs Out
+          Navigator.pushNamed(context, '/checker');
+        }
+      },
+      child: Scaffold(
+        body: _pages[_currentIndex],
+        key: _homeKey,
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (int index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          selectedItemColor: Colors.black,
+          selectedLabelStyle:
+              semiboldTS.copyWith(fontSize: 11, color: Colors.black),
+          // unselectedLabelStyle:
+          //     mediumTS.copyWith(fontSize: 11, color: Colors.black),
+          items: [
+            BottomNavigationBarItem(
+              icon: Image.asset(
+                'assets/icons/home_outlined.png',
+                scale: 2,
+              ),
+              activeIcon: Image.asset(
+                'assets/icons/home_filled.png',
+                scale: 2,
+              ),
+              label: 'Home',
             ),
-            activeIcon: Image.asset(
-              'assets/icons/home_filled.png',
-              scale: 2,
+            BottomNavigationBarItem(
+              icon: Image.asset(
+                'assets/icons/following_outlined.png',
+                scale: 2,
+              ),
+              activeIcon: Image.asset(
+                'assets/icons/following_filled.png',
+                scale: 2,
+              ),
+              label: 'Following',
             ),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'assets/icons/following_outlined.png',
-              scale: 2,
+            BottomNavigationBarItem(
+              icon: Image.asset(
+                'assets/icons/saved_outlined.png',
+                scale: 2,
+              ),
+              activeIcon: Image.asset(
+                'assets/icons/saved_filled.png',
+                scale: 2,
+              ),
+              label: 'Saved',
             ),
-            activeIcon: Image.asset(
-              'assets/icons/following_filled.png',
-              scale: 2,
+            BottomNavigationBarItem(
+              icon: Image.asset(
+                'assets/icons/profile_circle_outlined.png',
+                scale: 2,
+              ),
+              activeIcon: Image.asset(
+                'assets/icons/profile_circle_filled.png',
+                scale: 2,
+              ),
+              label: 'Profile',
             ),
-            label: 'Following',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'assets/icons/saved_outlined.png',
-              scale: 2,
-            ),
-            activeIcon: Image.asset(
-              'assets/icons/saved_filled.png',
-              scale: 2,
-            ),
-            label: 'Saved',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'assets/icons/profile_circle_outlined.png',
-              scale: 2,
-            ),
-            activeIcon: Image.asset(
-              'assets/icons/profile_circle_filled.png',
-              scale: 2,
-            ),
-            label: 'Profile',
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -106,6 +120,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final user = FirebaseAuth.instance.currentUser;
   String selectedCategory = 'top';
   String _getGreeting() {
     var now = DateTime.now();
@@ -131,6 +146,8 @@ class _HomeState extends State<Home> {
           const SizedBox(
             height: 16,
           ),
+
+          // Top Appbar
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
@@ -143,8 +160,11 @@ class _HomeState extends State<Home> {
                   decoration: BoxDecoration(
                     border: Border.all(color: greyBlur20),
                     shape: BoxShape.circle,
-                    image: const DecorationImage(
-                      image: AssetImage('assets/images/profile.jpg'),
+                    image: DecorationImage(
+                      image: user?.photoURL != null
+                          ? NetworkImage(user!.photoURL.toString())
+                              as ImageProvider
+                          : const AssetImage('assets/images/profile.jpg'),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -153,8 +173,10 @@ class _HomeState extends State<Home> {
                   width: 8,
                 ),
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 4,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -165,10 +187,24 @@ class _HomeState extends State<Home> {
                       const SizedBox(
                         height: 4,
                       ),
-                      Text(
-                        'Guest User 👋🏻',
-                        style: semiboldTS.copyWith(fontSize: 18),
-                      )
+
+                      // Check is user set display name or not
+                      user?.displayName != null
+                          ? Text(
+                              '${user?.displayName} 👋🏻',
+                              style: semiboldTS.copyWith(fontSize: 18),
+                            )
+
+                          // Check is user login or not
+                          : user?.email != null
+                              ? Text(
+                                  '${user?.email} 👋🏻',
+                                  style: semiboldTS.copyWith(fontSize: 18),
+                                )
+                              : Text(
+                                  'Guest User 👋🏻',
+                                  style: semiboldTS.copyWith(fontSize: 18),
+                                )
                     ],
                   ),
                 ),
@@ -214,6 +250,8 @@ class _HomeState extends State<Home> {
               ],
             ),
           ),
+
+          // Searchbar
           GestureDetector(
             onTap: () {
               Navigator.push(
@@ -249,6 +287,8 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
+
+          // Hot Topics
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -308,6 +348,8 @@ class _HomeState extends State<Home> {
               )
             ],
           ),
+
+          // Top Picks
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Text(
@@ -315,6 +357,8 @@ class _HomeState extends State<Home> {
               style: semiboldTS.copyWith(fontSize: 18),
             ),
           ),
+
+          // Category
           Container(
             margin: const EdgeInsets.symmetric(vertical: 4),
             height: 35,
@@ -418,125 +462,167 @@ class _HomeState extends State<Home> {
   }
 }
 
-class Following extends StatelessWidget {
+class Following extends StatefulWidget {
   const Following({super.key});
 
   @override
+  State<Following> createState() => _FollowingState();
+}
+
+class _FollowingState extends State<Following> {
+  String? publisher;
+
+  @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
     return SafeArea(
-      child: ListView(
-        children: [
-          Container(
-            margin: const EdgeInsets.all(16),
-            child: Text(
-              'Following',
-              style: semiboldTS.copyWith(fontSize: 24),
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: Row(
+      child: user != null
+          ? ListView(
               children: [
-                Text(
-                  'Publisher',
-                  style: semiboldTS.copyWith(fontSize: 18),
-                ),
-                const Spacer(),
-                GestureDetector(
-                  onTap: () {
-                    showCustomSnackbar(context, null);
-                  },
+                Container(
+                  margin: const EdgeInsets.all(16),
                   child: Text(
-                    'View All',
-                    style: semiboldTS,
+                    'Following',
+                    style: semiboldTS.copyWith(fontSize: 24),
                   ),
-                )
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            height: 96,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                const SizedBox(
-                  width: 16,
                 ),
-                Publisher(
-                  name: 'Publisher Name',
-                  imgUrl: 'assets/images/profile.jpg',
-                  action: () {
-                    showCustomSnackbar(context, null);
-                  },
-                ),
-                Publisher(
-                  name: 'Publisher Name',
-                  imgUrl: 'assets/images/profile.jpg',
-                  action: () {
-                    showCustomSnackbar(context, null);
-                  },
-                ),
-                Publisher(
-                  name: 'Publisher Name',
-                  imgUrl: 'assets/images/profile.jpg',
-                  action: () {
-                    showCustomSnackbar(context, null);
-                  },
-                ),
-                Publisher(
-                  name: 'Publisher Name',
-                  imgUrl: 'assets/images/profile.jpg',
-                  action: () {
-                    showCustomSnackbar(context, null);
-                  },
-                ),
-                Publisher(
-                  name: 'Publisher Name',
-                  imgUrl: 'assets/images/profile.jpg',
-                  action: () {
-                    showCustomSnackbar(context, null);
-                  },
-                ),
-              ],
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Text(
-              'Recent Articles',
-              style: semiboldTS.copyWith(fontSize: 18),
-            ),
-          ),
-          BlocProvider(
-            create: (context) => NewsBloc()..add(const NewsGet('top')),
-            child: BlocBuilder<NewsBloc, NewsState>(
-              builder: (context, state) {
-                if (state is NewsSuccess) {
-                  return Column(
-                      children: state.data.map((news) {
-                    return TopPicksCard(
-                      model: news,
-                      action: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => NewsPage(model: news),
+                Column(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 4),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Publisher',
+                            style: semiboldTS.copyWith(fontSize: 18),
                           ),
-                        );
-                      },
-                    );
-                  }).toList());
-                }
-                return const TopPicksLoading();
-              },
-            ),
-          ),
-        ],
-      ),
+                          // const Spacer(),
+                          // GestureDetector(
+                          //   onTap: () {
+                          //     showCustomSnackbar(context, null);
+                          //   },
+                          //   child: Text(
+                          //     'View All',
+                          //     style: semiboldTS,
+                          //   ),
+                          // )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      height: 96,
+                      child: StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(user.uid)
+                            .collection('publishers')
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final publishers = snapshot.data!.docs;
+                            if (publishers.isEmpty) {
+                              return const Center(
+                                child: Text(
+                                    'You are not following any publishers yet!'),
+                              );
+                            } else {
+                              return ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: publishers.length + 1,
+                                  itemBuilder: (context, index) {
+                                    if (index == 0) {
+                                      return const SizedBox(width: 16);
+                                    } else {
+                                      final publisherData =
+                                          publishers[index - 1].data()
+                                              as Map<String, dynamic>;
+                                      return Publisher(
+                                        name: capitalizeFirstLetter(
+                                            publisherData['name']),
+                                        imgUrl:
+                                            'assets/images/logo_${publisherData['name']}.png',
+                                        action: () {
+                                          setState(() {
+                                            publisher = publisherData['name'];
+                                          });
+                                        },
+                                      );
+                                    }
+                                  });
+                            }
+                          } else {
+                            return const Center(
+                              child: CircularProgressIndicator(
+                                color: blackColor,
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          publisher == null
+                              ? Text(
+                                  'Recent Articles',
+                                  style: semiboldTS.copyWith(fontSize: 18),
+                                )
+                              : Text(
+                                  '${capitalizeFirstLetter(publisher!)}\'s News',
+                                  style: semiboldTS.copyWith(fontSize: 18),
+                                ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    publisher != null
+                        ? ShowPublisherNews(
+                            key: ObjectKey(publisher), publisher: publisher!)
+                        : BlocProvider(
+                            create: (context) =>
+                                NewsBloc()..add(const NewsGet('top')),
+                            child: BlocBuilder<NewsBloc, NewsState>(
+                              builder: (context, state) {
+                                if (state is NewsSuccess) {
+                                  return Column(
+                                      children: state.data.map((news) {
+                                    return TopPicksCard(
+                                      model: news,
+                                      action: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                NewsPage(model: news),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  }).toList());
+                                }
+                                return const TopPicksLoading();
+                              },
+                            ),
+                          ),
+                  ],
+                ),
+              ],
+            )
+          : const LoginRequired(),
     );
   }
 }
@@ -546,94 +632,115 @@ class Saved extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
     return SafeArea(
-      child: ListView(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                margin: const EdgeInsets.all(16),
-                child: Text(
-                  'Saved',
-                  style: semiboldTS.copyWith(
-                    fontSize: 24,
+      child: user != null
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  margin: const EdgeInsets.all(16),
+                  child: Text(
+                    'Saved',
+                    style: semiboldTS.copyWith(
+                      fontSize: 24,
+                    ),
+                    textAlign: TextAlign.left,
                   ),
-                  textAlign: TextAlign.left,
                 ),
-              ),
-              Container(
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
+                Expanded(
+                  child: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(user.uid)
+                          .collection('news')
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          List<NewsModel> savedNews = [];
+                          for (QueryDocumentSnapshot document
+                              in snapshot.data!.docs) {
+                            Map<String, dynamic> data =
+                                document.data() as Map<String, dynamic>;
+                            NewsModel news = NewsModel.fromMap(
+                                data); // Assuming you have a fromMap method in NewsModel
+                            savedNews.add(news);
+                          }
+                          if (savedNews.isEmpty) {
+                            return const Center(
+                              child: Text(
+                                'No saved news. Save news to see them here!',
+                                textAlign: TextAlign.center,
+                                style:
+                                    TextStyle(fontSize: 16, color: Colors.grey),
+                              ),
+                            );
+                          } else {
+                            // return ListView.builder(
+                            //   scrollDirection: Axis.vertical,
+                            //   itemCount: savedNews.length,
+                            //   itemBuilder: (context, index) {
+                            //     NewsModel news = savedNews[index];
+                            //     return TopPicksCard(
+                            //       model: news,
+                            //       action: () {
+                            //         Navigator.push(
+                            //           context,
+                            //           MaterialPageRoute(
+                            //             builder: (context) =>
+                            //                 NewsPage(model: news),
+                            //           ),
+                            //         );
+                            //       },
+                            //     );
+                            //   },
+                            // );
+                            return Container(
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              child: GridView.builder(
+                                gridDelegate:
+                                    const SliverGridDelegateWithMaxCrossAxisExtent(
+                                        maxCrossAxisExtent: 200,
+                                        crossAxisSpacing: 16,
+                                        mainAxisSpacing: 16),
+                                itemCount: savedNews.length,
+                                itemBuilder: (BuildContext context, index) {
+                                  return SavedCard(
+                                    title: savedNews[index].title.toString(),
+                                    imgUrl:
+                                        savedNews[index].imageUrl.toString(),
+                                    category:
+                                        savedNews[index].category.toString(),
+                                    publisher:
+                                        savedNews[index].sourceId.toString(),
+                                    date: savedNews[index].pubDate.toString(),
+                                    action: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              NewsPage(model: savedNews[index]),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            );
+                          }
+                        } else {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: blackColor,
+                            ),
+                          );
+                        }
+                      }),
                 ),
-                child: const Center(
-                  child: Text('This feature is coming soon!'),
-                ),
-                // child: Wrap(
-                //   spacing: 16,
-                //   runSpacing: 16,
-                //   children: [
-                //     SavedCard(
-                //       title: 'Kebakaran di Jakarta Timur Hanguskan 16 Kambing',
-                //       imgUrl: 'assets/images/news1.jpg',
-                //       category: 'Regional',
-                //       publisher: 'Tempo',
-                //       date: '17 Juni 2023',
-                //       action: () {
-                //         showCustomSnackbar(context, null);
-                //       },
-                //     ),
-                //     SavedCard(
-                //       title:
-                //           'Manfaat Habatusauda bagi Kesehatan dan Cara Terbaik Mengonsumsinya',
-                //       imgUrl: 'assets/images/news1.jpg',
-                //       category: 'Lifestyle',
-                //       publisher: 'Kompas',
-                //       date: '17 Juni 2023',
-                //       action: () {
-                //         showCustomSnackbar(context, null);
-                //       },
-                //     ),
-                //     SavedCard(
-                //       title: 'Media Argentina Puji Sambutan Spesial Indonesia',
-                //       imgUrl: 'assets/images/news1.jpg',
-                //       category: 'Sport',
-                //       publisher: 'CNN Indonesia',
-                //       date: '17 Juni 2023',
-                //       action: () {
-                //         showCustomSnackbar(context, null);
-                //       },
-                //     ),
-                //     SavedCard(
-                //       title:
-                //           'Pertamina Ajak Generasi Muda Jadi Agen Perubahan Lingkungan',
-                //       imgUrl: 'assets/images/news1.jpg',
-                //       category: 'Economy',
-                //       publisher: 'CNN Indonesia',
-                //       date: '17 Juni 2023',
-                //       action: () {
-                //         showCustomSnackbar(context, null);
-                //       },
-                //     ),
-                //     SavedCard(
-                //       title:
-                //           'Elektabilitas Anies Salip Ganjar dan Pepet Prabowo di Survei Terbaru IPO',
-                //       imgUrl: 'assets/images/news1.jpg',
-                //       category: 'Politics',
-                //       publisher: 'Tempo',
-                //       date: '17 Juni 2023',
-                //       action: () {
-                //         showCustomSnackbar(context, null);
-                //       },
-                //     ),
-                //   ],
-                // ),
-              ),
-            ],
-          ),
-        ],
-      ),
+              ],
+            )
+          : const LoginRequired(),
     );
   }
 }
@@ -643,102 +750,104 @@ class Profile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
     return SafeArea(
-      child: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 40),
-        children: [
-          Center(
-            child: Container(
-              padding: const EdgeInsets.all(30),
-              decoration: BoxDecoration(
-                border: Border.all(color: greyBlur20),
-                borderRadius: BorderRadius.circular(20),
-                color: Colors.white,
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    height: 120,
-                    width: 120,
+      child: user != null
+          ? ListView(
+              padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 40),
+              children: [
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(30),
                     decoration: BoxDecoration(
                       border: Border.all(color: greyBlur20),
-                      shape: BoxShape.circle,
-                      image: const DecorationImage(
-                        fit: BoxFit.cover,
-                        image: AssetImage(
-                          'assets/images/profile.jpg',
-                        ),
-                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 18,
-                  ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 10),
-                    child: Text(
-                      'Guest User',
-                      style: semiboldTS.copyWith(fontSize: 20),
-                    ),
-                  ),
-                  Text(
-                    'Joined July 2022',
-                    style: mediumTS.copyWith(
-                      color: greyColor,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 22,
-                  ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 24),
                     child: Column(
                       children: [
-                        ProfileMenu(
-                          title: 'Edit Profile',
-                          iconUrl: 'assets/icons/user_edit.png',
-                          action: () {
-                            showCustomSnackbar(context, null);
-                          },
+                        Container(
+                          height: 120,
+                          width: 120,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: greyBlur20),
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: user.photoURL != null
+                                  ? NetworkImage(user.photoURL.toString())
+                                      as ImageProvider
+                                  : const AssetImage(
+                                      'assets/images/profile.jpg'),
+                            ),
+                          ),
                         ),
-                        ProfileMenu(
-                          title: 'My Rewards',
-                          iconUrl: 'assets/icons/user_rewards.png',
-                          badge: 2,
-                          action: () {
-                            showCustomSnackbar(context, null);
-                          },
+                        const SizedBox(
+                          height: 18,
                         ),
-                        ProfileMenu(
-                          title: 'Help Center',
-                          iconUrl: 'assets/icons/user_help.png',
-                          action: () {
-                            showCustomSnackbar(context, null);
-                          },
+                        Container(
+                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          child: Text(
+                            '${user.email}',
+                            style: semiboldTS.copyWith(fontSize: 20),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
-                        ProfileMenu(
-                          title: 'Log Out',
-                          iconUrl: 'assets/icons/user_logout.png',
-                          action: () {
-                            showCustomSnackbar(context, null);
-                          },
+                        Text(
+                          'Joined ${user.metadata.creationTime != null ? DateFormat('MMMM y').format(user.metadata.creationTime!) : 'unknown'}',
+                          style: mediumTS.copyWith(
+                            color: greyColor,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 22,
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(vertical: 24),
+                          child: Column(
+                            children: [
+                              ProfileMenu(
+                                title: 'Edit Profile',
+                                iconUrl: 'assets/icons/user_edit.png',
+                                action: () {
+                                  Navigator.pushNamed(context, '/uploadpp');
+                                },
+                              ),
+                              ProfileMenu(
+                                title: 'My Rewards',
+                                iconUrl: 'assets/icons/user_rewards.png',
+                                badge: 2,
+                                action: () {},
+                              ),
+                              ProfileMenu(
+                                title: 'Help Center',
+                                iconUrl: 'assets/icons/user_help.png',
+                                action: () {},
+                              ),
+                              ProfileMenu(
+                                title: 'Log Out',
+                                iconUrl: 'assets/icons/user_logout.png',
+                                action: () {
+                                  context.read<AuthBloc>().add(AuthSignOut());
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        Text(
+                          'Last Login : ${user.metadata.lastSignInTime}',
+                          style: mediumTS.copyWith(
+                            color: greyBlur60,
+                            fontSize: 10,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  Text(
-                    'Last Login : Just Now',
-                    style: mediumTS.copyWith(
-                      color: greyBlur60,
-                      fontSize: 10,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
-        ],
-      ),
+                )
+              ],
+            )
+          : const LoginRequired(),
     );
   }
 }
@@ -772,6 +881,99 @@ class ShowTopPicks extends StatelessWidget {
           }
           return const TopPicksLoading();
         },
+      ),
+    );
+  }
+}
+
+class ShowPublisherNews extends StatelessWidget {
+  final String publisher;
+  const ShowPublisherNews({super.key, required this.publisher});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => NewsBloc()..add(NewsPublisher(publisher)),
+      child: BlocBuilder<NewsBloc, NewsState>(
+        builder: (context, state) {
+          if (state is NewsSuccess) {
+            return Column(
+              children: state.data.map((news) {
+                return TopPicksCard(
+                  model: news,
+                  action: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NewsPage(model: news),
+                      ),
+                    );
+                  },
+                );
+              }).toList(),
+            );
+          }
+          return const TopPicksLoading();
+        },
+      ),
+    );
+  }
+}
+
+class LoginRequired extends StatelessWidget {
+  const LoginRequired({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            'assets/images/onboarding1.png',
+            width: 260,
+          ),
+          Text(
+            'Be Part of Us and Unlock\nAll The Features!',
+            style: semiboldTS.copyWith(
+              fontSize: 24,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(
+            height: 12,
+          ),
+          Text(
+            'Please login to your account to continue\naccessing this feature.',
+            style: mediumTS.copyWith(color: greyBlur60, height: 1.8),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(
+            height: 24,
+          ),
+          GestureDetector(
+            onTap: () {
+              BlocProvider.of<AuthBloc>(context).add(AuthSignOut());
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 41),
+              padding: const EdgeInsets.symmetric(vertical: 18),
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(100),
+              ),
+              child: Center(
+                child: Text(
+                  'Login',
+                  style: semiboldTS.copyWith(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

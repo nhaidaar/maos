@@ -26,3 +26,11 @@ class NewsSearch extends NewsEvent {
 class NewsRecommend extends NewsEvent {}
 
 class NewsHot extends NewsEvent {}
+
+class NewsPublisher extends NewsEvent {
+  final String publisher;
+  const NewsPublisher(this.publisher);
+
+  @override
+  List<Object> get props => [publisher];
+}

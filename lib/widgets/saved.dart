@@ -16,30 +16,30 @@ class SavedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final deviceWidth = MediaQuery.of(context).size.width;
-
     return GestureDetector(
       onTap: action,
       child: Stack(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            height: deviceWidth / 2 - 24,
-            width: deviceWidth / 2 - 24,
+            height: 200,
+            width: 200,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
                 fit: BoxFit.fitHeight,
-                image: AssetImage(
-                  imgUrl,
-                ),
+                image: imgUrl != 'null'
+                    ? NetworkImage(
+                        imgUrl,
+                      ) as ImageProvider
+                    : const AssetImage('assets/images/news1.jpg'),
               ),
             ),
           ),
           Container(
             padding: const EdgeInsets.all(10),
-            height: deviceWidth / 2 - 24,
-            width: deviceWidth / 2 - 24,
+            height: 200,
+            width: 200,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8.0),
               gradient: const LinearGradient(
@@ -51,8 +51,8 @@ class SavedCard extends StatelessWidget {
           ),
           Container(
             padding: const EdgeInsets.all(10),
-            height: deviceWidth / 2 - 24,
-            width: deviceWidth / 2 - 24,
+            height: 200,
+            width: 200,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -71,7 +71,7 @@ class SavedCard extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(top: deviceWidth / 5.4),
+                  margin: const EdgeInsets.only(top: 75),
                   child: Text(
                     title,
                     style:

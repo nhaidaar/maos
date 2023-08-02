@@ -1,4 +1,4 @@
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:maos/models/news_model.dart';
 import 'package:maos/services/news_services.dart';
@@ -40,6 +40,15 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
         try {
           emit(NewsLoading());
           final data = await NewsService().hotNews();
+          emit(NewsSuccess(data));
+        } catch (e) {
+          emit(NewsFailed(e.toString()));
+        }
+      }
+      if (event is NewsPublisher) {
+        try {
+          emit(NewsLoading());
+          final data = await NewsService().publisherNews(event.publisher);
           emit(NewsSuccess(data));
         } catch (e) {
           emit(NewsFailed(e.toString()));

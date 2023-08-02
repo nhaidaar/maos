@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "446716266560",
-    "project_id": "nhaidaar-maos",
-    "storage_bucket": "nhaidaar-maos.appspot.com"
+    "project_number": "61797104720",
+    "project_id": "nhai-maos",
+    "storage_bucket": "nhai-maos.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:446716266560:android:1a40091365e1fff89bb7a5",
+        "mobilesdk_app_id": "1:61797104720:android:a414aa3ee608bb9da22555",
         "android_client_info": {
           "package_name": "com.nhaidaar.maos"
         }
       },
       "oauth_client": [
         {
-          "client_id": "446716266560-rgnnlepd3j9ftfplevats4pr20ss4ou1.apps.googleusercontent.com",
+          "client_id": "61797104720-t20bhdibro3stisqo3i2qi38nn72j66c.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDC66w2SbT9P7ppadKkaB6oGb6_CbrBd20"
+          "current_key": "AIzaSyDedCXe45_9VH00B0XqjTe4tnOlzXo7Z40"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "446716266560-rgnnlepd3j9ftfplevats4pr20ss4ou1.apps.googleusercontent.com",
+              "client_id": "61797104720-t20bhdibro3stisqo3i2qi38nn72j66c.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
