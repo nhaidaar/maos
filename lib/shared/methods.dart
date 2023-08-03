@@ -45,9 +45,13 @@ void showSnackbar(BuildContext context, String text, bool isError) {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text(
-                text,
-                style: semiboldTS,
+              Expanded(
+                child: Text(
+                  text,
+                  style: semiboldTS,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
               const SizedBox(
                 width: 6,

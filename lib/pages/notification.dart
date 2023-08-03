@@ -43,7 +43,7 @@ class NotificationPage extends StatelessWidget {
         children: [
           CustomNotification(
             title: 'Kebakaran di Jakarta Timur Hanguskan 16 Kambing',
-            imgUrl: 'assets/images/news1.jpg',
+            imgUrl: 'assets/images/news.jpg',
             time: '6 mins ago',
             action: () {
               // showCustomSnackbar(context, null);
@@ -53,7 +53,7 @@ class NotificationPage extends StatelessWidget {
           CustomNotification(
             title:
                 'Manfaat Habatusauda bagi Kesehatan dan Cara Terbaik Mengonsumsinya',
-            imgUrl: 'assets/images/news1.jpg',
+            imgUrl: 'assets/images/news.jpg',
             time: '17 mins ago',
             action: () {
               // showCustomSnackbar(context, null);
@@ -62,7 +62,7 @@ class NotificationPage extends StatelessWidget {
           ),
           CustomNotification(
             title: 'Media Argentina Puji Sambutan Spesial Indonesia',
-            imgUrl: 'assets/images/news1.jpg',
+            imgUrl: 'assets/images/news.jpg',
             time: '22 mins ago',
             action: () {
               // showCustomSnackbar(context, null);
@@ -72,7 +72,7 @@ class NotificationPage extends StatelessWidget {
           CustomNotification(
             title:
                 'Pertamina Ajak Generasi Muda Jadi Agen Perubahan Lingkungan',
-            imgUrl: 'assets/images/news1.jpg',
+            imgUrl: 'assets/images/news.jpg',
             time: '54 mins ago',
             action: () {
               // showCustomSnackbar(context, null);

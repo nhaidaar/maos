@@ -6,7 +6,7 @@ import 'package:maos/blocs/auth/auth_bloc.dart';
 import 'package:maos/blocs/news/news_bloc.dart';
 import 'package:maos/firebase_options.dart';
 import 'package:maos/pages/home.dart';
-import 'package:maos/pages/landing.dart';
+import 'package:maos/pages/auth.dart';
 import 'package:maos/pages/notification.dart';
 import 'package:maos/repositories/auth_repository.dart';
 import 'package:maos/screens/checker.dart';
@@ -18,7 +18,12 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+        statusBarColor: whiteBackground,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light),
+  );
   runApp(const Maos());
 }
 
@@ -44,6 +49,8 @@ class Maos extends StatelessWidget {
           theme: ThemeData(
             scaffoldBackgroundColor: whiteBackground,
             fontFamily: 'PlusJakartaSans',
+            // appBarTheme: const AppBarTheme(
+            //     systemOverlayStyle: SystemUiOverlayStyle.dark),
           ),
           debugShowCheckedModeBanner: false,
           routes: {
@@ -51,8 +58,10 @@ class Maos extends StatelessWidget {
             '/checker': (context) => const Checker(),
             '/login': (context) => const LoginPage(),
             '/register': (context) => const RegisterPage(),
+            '/forgotpassword': (context) => const ForgotPassword(),
             '/uploadpp': (context) => const UploadProfilePicture(),
             '/home': (context) => const HomePage(),
+            '/editprofile': (context) => const EditProfile(),
             '/notif': (context) => const NotificationPage(),
           },
         ),

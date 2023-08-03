@@ -31,7 +31,7 @@ class TopPicksCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 image: DecorationImage(
                   image: model.imageUrl == null
-                      ? const AssetImage('assets/images/news1.jpg')
+                      ? const AssetImage('assets/images/news.jpg')
                       : NetworkImage(model.imageUrl.toString())
                           as ImageProvider,
                   fit: BoxFit.cover,

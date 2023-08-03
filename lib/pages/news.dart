@@ -237,7 +237,7 @@ class _NewsPageState extends State<NewsPage> {
                 borderRadius: BorderRadius.circular(10),
                 image: DecorationImage(
                   image: widget.model.imageUrl == null
-                      ? const AssetImage('assets/images/news2.jpg')
+                      ? const AssetImage('assets/images/news.jpg')
                       : NetworkImage(widget.model.imageUrl.toString())
                           as ImageProvider,
                   fit: BoxFit.cover,
@@ -414,7 +414,7 @@ class NotificationAction extends StatelessWidget {
                             width: 8,
                           ),
                           Text(
-                            'Follow Publisher',
+                            'Follow \'${capitalizeFirstLetter(model.sourceId.toString())}\'',
                             style: actionButton,
                           ),
                         ],
@@ -422,14 +422,14 @@ class NotificationAction extends StatelessWidget {
                     : Row(
                         children: [
                           Image.asset(
-                            'assets/icons/news_follow.png',
+                            'assets/icons/news_unfollow.png',
                             scale: 2.5,
                           ),
                           const SizedBox(
                             width: 8,
                           ),
                           Text(
-                            'Unfollow Publisher',
+                            'Unfollow \'${capitalizeFirstLetter(model.sourceId.toString())}\'',
                             style: actionButton,
                           ),
                         ],
@@ -510,14 +510,14 @@ class NotificationAction extends StatelessWidget {
                     : Row(
                         children: [
                           Image.asset(
-                            'assets/icons/news_save.png',
+                            'assets/icons/news_unsave.png',
                             scale: 2.5,
                           ),
                           const SizedBox(
                             width: 8,
                           ),
                           Text(
-                            'Unsaved article',
+                            'Unsave article',
                             style: actionButton,
                           ),
                         ],

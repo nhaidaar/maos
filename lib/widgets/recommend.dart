@@ -27,7 +27,7 @@ class Recommend extends StatelessWidget {
                 border: Border.all(color: greyBlur20),
                 image: DecorationImage(
                   image: model.imageUrl == null
-                      ? const AssetImage('assets/images/news1.jpg')
+                      ? const AssetImage('assets/images/news.jpg')
                       : NetworkImage(
                           model.imageUrl.toString(),
                         ) as ImageProvider,

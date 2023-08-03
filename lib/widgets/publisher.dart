@@ -3,9 +3,14 @@ import 'package:maos/theme.dart';
 
 class Publisher extends StatelessWidget {
   final String name, imgUrl;
+  final bool isSelected;
   final VoidCallback? action;
   const Publisher(
-      {super.key, required this.name, required this.imgUrl, this.action});
+      {super.key,
+      required this.name,
+      required this.imgUrl,
+      this.action,
+      required this.isSelected});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +36,18 @@ class Publisher extends StatelessWidget {
             Text(
               name,
               style: semiboldTS,
-            )
+            ),
+            const SizedBox(
+              height: 4,
+            ),
+            Container(
+              height: 6,
+              width: 6,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isSelected ? blackColor : Colors.transparent,
+              ),
+            ),
           ],
         ),
       ),

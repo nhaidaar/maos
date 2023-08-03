@@ -1,7 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:maos/blocs/auth/auth_bloc.dart';
 import 'package:maos/blocs/news/news_bloc.dart';
@@ -42,7 +47,8 @@ class _HomePageState extends State<HomePage> {
       listener: (context, state) {
         if (state is UnAuthenticated) {
           // Navigate to the sign in screen when the user Signs Out
-          Navigator.pushNamed(context, '/checker');
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/checker', (route) => false);
         }
       },
       child: Scaffold(
@@ -172,43 +178,48 @@ class _HomeState extends State<Home> {
                 const SizedBox(
                   width: 8,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 4,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _getGreeting(),
-                        style: mediumTS.copyWith(color: greyBlur60),
-                      ),
-                      const SizedBox(
-                        height: 4,
-                      ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 4,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _getGreeting(),
+                          style: mediumTS.copyWith(color: greyBlur60),
+                        ),
+                        const SizedBox(
+                          height: 4,
+                        ),
 
-                      // Check is user set display name or not
-                      user?.displayName != null
-                          ? Text(
-                              '${user?.displayName} 👋🏻',
-                              style: semiboldTS.copyWith(fontSize: 18),
-                            )
+                        // Check is user set display name or not
+                        user?.displayName != null
+                            ? Text(
+                                '${user?.displayName} 👋🏻',
+                                style: semiboldTS.copyWith(fontSize: 18),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              )
 
-                          // Check is user login or not
-                          : user?.email != null
-                              ? Text(
-                                  '${user?.email} 👋🏻',
-                                  style: semiboldTS.copyWith(fontSize: 18),
-                                )
-                              : Text(
-                                  'Guest User 👋🏻',
-                                  style: semiboldTS.copyWith(fontSize: 18),
-                                )
-                    ],
+                            // Check is user login or not
+                            : user?.email != null
+                                ? Text(
+                                    '${user?.email} 👋🏻',
+                                    style: semiboldTS.copyWith(fontSize: 18),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  )
+                                : Text(
+                                    'Guest User 👋🏻',
+                                    style: semiboldTS.copyWith(fontSize: 18),
+                                  ),
+                      ],
+                    ),
                   ),
                 ),
-                const Spacer(),
                 GestureDetector(
                   onTap: () {
                     Navigator.pushNamed(context, '/notif');
@@ -487,139 +498,135 @@ class _FollowingState extends State<Following> {
                     style: semiboldTS.copyWith(fontSize: 24),
                   ),
                 ),
-                Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 4),
-                      child: Row(
-                        children: [
-                          Text(
-                            'Publisher',
-                            style: semiboldTS.copyWith(fontSize: 18),
-                          ),
-                          // const Spacer(),
-                          // GestureDetector(
-                          //   onTap: () {
-                          //     showCustomSnackbar(context, null);
-                          //   },
-                          //   child: Text(
-                          //     'View All',
-                          //     style: semiboldTS,
-                          //   ),
-                          // )
-                        ],
+                Container(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Publisher',
+                        style: semiboldTS.copyWith(fontSize: 18),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      height: 96,
-                      child: StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(user.uid)
-                            .collection('publishers')
-                            .snapshots(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            final publishers = snapshot.data!.docs;
-                            if (publishers.isEmpty) {
-                              return const Center(
-                                child: Text(
-                                    'You are not following any publishers yet!'),
-                              );
-                            } else {
-                              return ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: publishers.length + 1,
-                                  itemBuilder: (context, index) {
-                                    if (index == 0) {
-                                      return const SizedBox(width: 16);
-                                    } else {
-                                      final publisherData =
-                                          publishers[index - 1].data()
-                                              as Map<String, dynamic>;
-                                      return Publisher(
-                                        name: capitalizeFirstLetter(
-                                            publisherData['name']),
-                                        imgUrl:
-                                            'assets/images/logo_${publisherData['name']}.png',
-                                        action: () {
-                                          setState(() {
-                                            publisher = publisherData['name'];
-                                          });
-                                        },
-                                      );
-                                    }
-                                  });
-                            }
-                          } else {
-                            return const Center(
-                              child: CircularProgressIndicator(
-                                color: blackColor,
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          publisher == null
-                              ? Text(
-                                  'Recent Articles',
-                                  style: semiboldTS.copyWith(fontSize: 18),
-                                )
-                              : Text(
-                                  '${capitalizeFirstLetter(publisher!)}\'s News',
-                                  style: semiboldTS.copyWith(fontSize: 18),
-                                ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    publisher != null
-                        ? ShowPublisherNews(
-                            key: ObjectKey(publisher), publisher: publisher!)
-                        : BlocProvider(
-                            create: (context) =>
-                                NewsBloc()..add(const NewsGet('top')),
-                            child: BlocBuilder<NewsBloc, NewsState>(
-                              builder: (context, state) {
-                                if (state is NewsSuccess) {
-                                  return Column(
-                                      children: state.data.map((news) {
-                                    return TopPicksCard(
-                                      model: news,
-                                      action: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                NewsPage(model: news),
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  }).toList());
-                                }
-                                return const TopPicksLoading();
-                              },
-                            ),
-                          ),
-                  ],
+                      // const Spacer(),
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     showCustomSnackbar(context, null);
+                      //   },
+                      //   child: Text(
+                      //     'View All',
+                      //     style: semiboldTS,
+                      //   ),
+                      // )
+                    ],
+                  ),
                 ),
+                const SizedBox(
+                  height: 8,
+                ),
+                SizedBox(
+                  height: 110,
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(user.uid)
+                        .collection('publishers')
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final publishers = snapshot.data!.docs;
+                        if (publishers.isEmpty) {
+                          return const Center(
+                            child: Text(
+                                'You are not following any publishers yet!'),
+                          );
+                        } else {
+                          return ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: publishers.length + 1,
+                              itemBuilder: (context, index) {
+                                if (index == 0) {
+                                  return const SizedBox(width: 16);
+                                } else {
+                                  final publisherData = publishers[index - 1]
+                                      .data() as Map<String, dynamic>;
+                                  return Publisher(
+                                    name: capitalizeFirstLetter(
+                                        publisherData['name']),
+                                    imgUrl:
+                                        'assets/images/logo_${publisherData['name']}.png',
+                                    isSelected:
+                                        publisher == publisherData['name'],
+                                    action: () {
+                                      setState(() {
+                                        publisher = publisherData['name'];
+                                      });
+                                    },
+                                  );
+                                }
+                              });
+                        }
+                      } else {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: blackColor,
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      publisher == null
+                          ? Text(
+                              'Recent Articles',
+                              style: semiboldTS.copyWith(fontSize: 18),
+                            )
+                          : Text(
+                              '${capitalizeFirstLetter(publisher!)}\'s News',
+                              style: semiboldTS.copyWith(fontSize: 18),
+                            ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                publisher != null
+                    ? ShowPublisherNews(
+                        key: ObjectKey(publisher), publisher: publisher!)
+                    : BlocProvider(
+                        create: (context) =>
+                            NewsBloc()..add(const NewsGet('top')),
+                        child: BlocBuilder<NewsBloc, NewsState>(
+                          builder: (context, state) {
+                            if (state is NewsSuccess) {
+                              return Column(
+                                  children: state.data.map((news) {
+                                return TopPicksCard(
+                                  model: news,
+                                  action: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            NewsPage(model: news),
+                                      ),
+                                    );
+                                  },
+                                );
+                              }).toList());
+                            }
+                            return const TopPicksLoading();
+                          },
+                        ),
+                      ),
               ],
             )
           : const LoginRequired(),
@@ -676,25 +683,6 @@ class Saved extends StatelessWidget {
                               ),
                             );
                           } else {
-                            // return ListView.builder(
-                            //   scrollDirection: Axis.vertical,
-                            //   itemCount: savedNews.length,
-                            //   itemBuilder: (context, index) {
-                            //     NewsModel news = savedNews[index];
-                            //     return TopPicksCard(
-                            //       model: news,
-                            //       action: () {
-                            //         Navigator.push(
-                            //           context,
-                            //           MaterialPageRoute(
-                            //             builder: (context) =>
-                            //                 NewsPage(model: news),
-                            //           ),
-                            //         );
-                            //       },
-                            //     );
-                            //   },
-                            // );
                             return Container(
                               margin:
                                   const EdgeInsets.symmetric(horizontal: 16),
@@ -753,99 +741,201 @@ class Profile extends StatelessWidget {
     final user = FirebaseAuth.instance.currentUser;
     return SafeArea(
       child: user != null
-          ? ListView(
-              padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 40),
-              children: [
-                Center(
-                  child: Container(
-                    padding: const EdgeInsets.all(30),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: greyBlur20),
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.white,
+          ? Container(
+              margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 120),
+              padding: const EdgeInsets.all(30),
+              decoration: BoxDecoration(
+                border: Border.all(color: greyBlur20),
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.white,
+              ),
+              child: Column(
+                children: [
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        height: 120,
+                        width: 120,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: greyBlur20),
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: user.photoURL != null
+                                ? NetworkImage(user.photoURL.toString())
+                                    as ImageProvider
+                                : const AssetImage('assets/images/profile.jpg'),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 140,
+                        width: 140,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: whiteColor, width: 10),
+                          color: Colors.transparent,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 10),
+                    child: Text(
+                      '${user.displayName}',
+                      style: semiboldTS.copyWith(fontSize: 20),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
                     ),
+                  ),
+                  Text(
+                    'Joined in ${user.metadata.creationTime != null ? DateFormat('MMMM y').format(user.metadata.creationTime!) : 'unknown'}',
+                    style: mediumTS.copyWith(
+                      color: greyColor,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 45,
+                  ),
+                  Expanded(
                     child: Column(
                       children: [
-                        Container(
-                          height: 120,
-                          width: 120,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: greyBlur20),
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: user.photoURL != null
-                                  ? NetworkImage(user.photoURL.toString())
-                                      as ImageProvider
-                                  : const AssetImage(
-                                      'assets/images/profile.jpg'),
-                            ),
-                          ),
+                        ProfileMenu(
+                          title: 'Edit Profile',
+                          iconUrl: 'assets/icons/user_edit.png',
+                          action: () {
+                            Navigator.pushNamed(context, '/editprofile');
+                          },
                         ),
-                        const SizedBox(
-                          height: 18,
+                        ProfileMenu(
+                          title: 'Help Center',
+                          iconUrl: 'assets/icons/user_help.png',
+                          action: () {},
                         ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(vertical: 10),
-                          child: Text(
-                            '${user.email}',
-                            style: semiboldTS.copyWith(fontSize: 20),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        Text(
-                          'Joined ${user.metadata.creationTime != null ? DateFormat('MMMM y').format(user.metadata.creationTime!) : 'unknown'}',
-                          style: mediumTS.copyWith(
-                            color: greyColor,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 22,
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(vertical: 24),
-                          child: Column(
-                            children: [
-                              ProfileMenu(
-                                title: 'Edit Profile',
-                                iconUrl: 'assets/icons/user_edit.png',
-                                action: () {
-                                  Navigator.pushNamed(context, '/uploadpp');
-                                },
-                              ),
-                              ProfileMenu(
-                                title: 'My Rewards',
-                                iconUrl: 'assets/icons/user_rewards.png',
-                                badge: 2,
-                                action: () {},
-                              ),
-                              ProfileMenu(
-                                title: 'Help Center',
-                                iconUrl: 'assets/icons/user_help.png',
-                                action: () {},
-                              ),
-                              ProfileMenu(
-                                title: 'Log Out',
-                                iconUrl: 'assets/icons/user_logout.png',
-                                action: () {
-                                  context.read<AuthBloc>().add(AuthSignOut());
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        Text(
-                          'Last Login : ${user.metadata.lastSignInTime}',
-                          style: mediumTS.copyWith(
-                            color: greyBlur60,
-                            fontSize: 10,
-                          ),
+                        ProfileMenu(
+                          title: 'Log Out',
+                          iconUrl: 'assets/icons/user_logout.png',
+                          action: () {
+                            showDialog(
+                                barrierDismissible: false,
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    alignment: Alignment.center,
+                                    insetPadding: EdgeInsets.zero,
+                                    backgroundColor: Colors.transparent,
+                                    content: Container(
+                                      height: 150,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 40,
+                                        vertical: 20,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: whiteColor,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            'Are you sure to log out?',
+                                            style: semiboldTS.copyWith(
+                                                fontSize: 16),
+                                          ),
+                                          const SizedBox(
+                                            height: 24,
+                                          ),
+                                          Row(
+                                            children: [
+                                              GestureDetector(
+                                                onTap: () {
+                                                  context
+                                                      .read<AuthBloc>()
+                                                      .add(AuthSignOut());
+                                                },
+                                                child: Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    horizontal: 20,
+                                                    vertical: 12,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color: blackColor,
+                                                        width: 1.5),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            100),
+                                                  ),
+                                                  child: FittedBox(
+                                                    child: Text(
+                                                      'Yes, I\'m Out',
+                                                      style:
+                                                          semiboldTS.copyWith(
+                                                              fontSize: 12),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                width: 12,
+                                              ),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Container(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    horizontal: 20,
+                                                    vertical: 12,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: blackColor,
+                                                    border: Border.all(
+                                                        color: blackColor,
+                                                        width: 1.5),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            100),
+                                                  ),
+                                                  child: FittedBox(
+                                                    child: Text(
+                                                      'Nevermind',
+                                                      style:
+                                                          semiboldTS.copyWith(
+                                                              fontSize: 12,
+                                                              color:
+                                                                  whiteColor),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                });
+                          },
                         ),
                       ],
                     ),
                   ),
-                )
-              ],
+                  Text(
+                    'Last Login : ${user.metadata.lastSignInTime}',
+                    style: mediumTS.copyWith(
+                      color: greyBlur60,
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
+              ),
             )
           : const LoginRequired(),
     );
@@ -953,7 +1043,7 @@ class LoginRequired extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              BlocProvider.of<AuthBloc>(context).add(AuthSignOut());
+              context.read<AuthBloc>().add(AuthSignOut());
             },
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 41),
@@ -975,6 +1065,317 @@ class LoginRequired extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class EditProfile extends StatefulWidget {
+  const EditProfile({super.key});
+
+  @override
+  State<EditProfile> createState() => _EditProfileState();
+}
+
+class _EditProfileState extends State<EditProfile> {
+  final user = FirebaseAuth.instance.currentUser;
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+  String recentEmail = '';
+  Uint8List? pickedImage;
+
+  @override
+  void initState() {
+    super.initState();
+    nameController.text = user!.displayName.toString();
+    emailController.text = user!.email.toString();
+    recentEmail = user!.email.toString();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 72,
+        backgroundColor: whiteBackground,
+        elevation: 0,
+        leadingWidth: 68,
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Container(
+            height: 48,
+            width: 48,
+            margin: const EdgeInsets.only(left: 18),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: greyBlur20),
+            ),
+            child: Center(
+              child: Image.asset(
+                'assets/icons/news_back.png',
+                width: 24,
+              ),
+            ),
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          height: 140,
+                          width: 140,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            image: pickedImage != null
+                                ? DecorationImage(
+                                    image: MemoryImage(pickedImage!),
+                                    fit: BoxFit.cover,
+                                  )
+                                : DecorationImage(
+                                    image:
+                                        NetworkImage(user!.photoURL.toString()),
+                                    fit: BoxFit.cover),
+                          ),
+                        ),
+                        Container(
+                          height: 160,
+                          width: 160,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: whiteColor, width: 10),
+                            color: Colors.transparent,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () async {
+                        Uint8List? img = await pickImage(ImageSource.gallery);
+                        setState(() {
+                          if (img != null) {
+                            pickedImage = img;
+                          }
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 20,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: greyColor, width: 1.5),
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: FittedBox(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/icons/profile_picture_change.png',
+                                width: 24,
+                                height: 24,
+                              ),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              Text(
+                                'Change Image',
+                                style: semiboldTS.copyWith(
+                                    fontSize: 14, color: blackColor),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                // Name Form
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Name',
+                      style: semiboldTS.copyWith(fontSize: 14),
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    TextFormField(
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        hintText: 'Type your name',
+                        contentPadding: const EdgeInsets.all(16),
+                        hintStyle:
+                            mediumTS.copyWith(color: greyBlur40, fontSize: 14),
+                        border: defaultInputBorder,
+                        enabledBorder: defaultInputBorder,
+                        focusedBorder: defaultInputBorder,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+
+                    // Email Form
+                    Text(
+                      'Email',
+                      style: semiboldTS.copyWith(fontSize: 14),
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    TextFormField(
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        hintText: 'Type your email',
+                        contentPadding: const EdgeInsets.all(16),
+                        hintStyle:
+                            mediumTS.copyWith(color: greyBlur40, fontSize: 14),
+                        border: defaultInputBorder,
+                        enabledBorder: defaultInputBorder,
+                        focusedBorder: defaultInputBorder,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+
+                    // Password Form
+                    Text(
+                      'New Password',
+                      style: semiboldTS.copyWith(fontSize: 14),
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    TextFormField(
+                      controller: passwordController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        hintText:
+                            'Leave blank if you will not change your password',
+                        contentPadding: const EdgeInsets.all(16),
+                        hintStyle:
+                            mediumTS.copyWith(color: greyBlur40, fontSize: 13),
+                        border: defaultInputBorder,
+                        enabledBorder: defaultInputBorder,
+                        focusedBorder: defaultInputBorder,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+
+                    // Confirm Password Form
+                    Text(
+                      'Confirm Password',
+                      style: semiboldTS.copyWith(fontSize: 14),
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    TextFormField(
+                      controller: confirmPasswordController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        hintText: 'Type your confirm password',
+                        contentPadding: const EdgeInsets.all(16),
+                        hintStyle:
+                            mediumTS.copyWith(color: greyBlur40, fontSize: 13),
+                        border: defaultInputBorder,
+                        enabledBorder: defaultInputBorder,
+                        focusedBorder: defaultInputBorder,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+          color: whiteBackground,
+          elevation: 0,
+          child: GestureDetector(
+            onTap: () async {
+              showLoadingDialog(context, 'Updating your profile...');
+              try {
+                await user!.reauthenticateWithCredential(
+                    EmailAuthProvider.credential(
+                        email: recentEmail,
+                        password: confirmPasswordController.text));
+                if (passwordController.text.isNotEmpty) {
+                  await user!.updatePassword(passwordController.text);
+                }
+                await user!.updateDisplayName(nameController.text);
+                await user!.updateEmail(emailController.text);
+
+                if (pickedImage != null) {
+                  final url =
+                      await uploadImageToStorage(user!.uid, pickedImage!);
+                  await user!.updatePhotoURL(url);
+                }
+                Navigator.pop(context);
+                // Show Success Snackbar
+                showSnackbar(
+                    context, 'Your profile was completedly updated!', false);
+                // Navigate to Home
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/home',
+                  (route) => false,
+                );
+              } on FirebaseAuthException catch (e) {
+                Navigator.pop(context);
+                // Show Error Snackbar
+                showSnackbar(context, e.code, true);
+              }
+            },
+            child: Container(
+              height: 56,
+              margin: const EdgeInsets.all(20),
+              padding: const EdgeInsets.symmetric(vertical: 18),
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(100),
+              ),
+              child: Center(
+                child: Text(
+                  'Update',
+                  style: semiboldTS.copyWith(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          )),
     );
   }
 }

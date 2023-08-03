@@ -19,18 +19,40 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final bool _passwordVisible = false;
+  // final bool _passwordVisible = false;
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  bool areFieldsEmpty = true;
+
+  @override
+  void initState() {
+    super.initState();
+    emailController.addListener(updateFieldState);
+    passwordController.addListener(updateFieldState);
+  }
+
+  @override
+  void dispose() {
+    emailController.removeListener(updateFieldState);
+    passwordController.removeListener(updateFieldState);
+    emailController.dispose();
+    super.dispose();
+  }
+
+  void updateFieldState() {
+    setState(() {
+      areFieldsEmpty =
+          emailController.text.isEmpty || passwordController.text.isEmpty;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
-
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is Authenticated) {
           // Navigating to the dashboard screen if the user is authenticated
-          Navigator.pushReplacementNamed(context, '/home');
+          Navigator.pushNamed(context, '/home');
         }
         if (state is AuthError) {
           // Showing the error message if the user has entered invalid credentials
@@ -49,7 +71,6 @@ class _LoginPageState extends State<LoginPage> {
             );
           }
           return Scaffold(
-            backgroundColor: whiteBackground,
             body: SafeArea(
               child: SingleChildScrollView(
                 child: Padding(
@@ -110,18 +131,9 @@ class _LoginPageState extends State<LoginPage> {
                           contentPadding: const EdgeInsets.all(20),
                           hintStyle: mediumTS.copyWith(
                               color: greyBlur40, fontSize: 14),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: greyBlur10),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: greyBlur10),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: greyBlur10),
-                          ),
+                          border: defaultInputBorder,
+                          enabledBorder: defaultInputBorder,
+                          focusedBorder: defaultInputBorder,
                         ),
                       ),
 
@@ -139,7 +151,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       TextFormField(
                         controller: passwordController,
-                        obscureText: !_passwordVisible,
+                        obscureText: true,
                         decoration: InputDecoration(
                           // suffixIcon: IconButton(
                           //   onPressed: () {
@@ -155,18 +167,9 @@ class _LoginPageState extends State<LoginPage> {
                           contentPadding: const EdgeInsets.all(20),
                           hintStyle: mediumTS.copyWith(
                               color: greyBlur40, fontSize: 14),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: greyBlur10),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: greyBlur10),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: greyBlur10),
-                          ),
+                          border: defaultInputBorder,
+                          enabledBorder: defaultInputBorder,
+                          focusedBorder: defaultInputBorder,
                         ),
                       ),
 
@@ -176,41 +179,68 @@ class _LoginPageState extends State<LoginPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Text(
-                            'Forgot Password?',
-                            style: mediumTS.copyWith(fontSize: 14),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, '/forgotpassword');
+                            },
+                            child: Text(
+                              'Forgot Password?',
+                              style: mediumTS.copyWith(fontSize: 14),
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(
                         height: 24,
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          BlocProvider.of<AuthBloc>(context).add(
-                            AuthSignIn(
-                              emailController.text,
-                              passwordController.text,
-                            ),
-                          );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 18),
-                          decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Login',
-                              style: semiboldTS.copyWith(
-                                fontSize: 16,
-                                color: Colors.white,
+                      !areFieldsEmpty
+                          ? GestureDetector(
+                              onTap: () {
+                                BlocProvider.of<AuthBloc>(context).add(
+                                  AuthSignIn(
+                                    emailController.text,
+                                    passwordController.text,
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 18),
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Login',
+                                    style: semiboldTS.copyWith(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Opacity(
+                              opacity: 0.2,
+                              child: Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 18),
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Login',
+                                    style: semiboldTS.copyWith(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      ),
                       Container(
                         margin: const EdgeInsets.symmetric(vertical: 12),
                         child: Row(
@@ -239,28 +269,34 @@ class _LoginPageState extends State<LoginPage> {
                           ],
                         ),
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: whiteColor,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
+                      GestureDetector(
+                        onTap: () {
+                          showSnackbar(
+                              context, 'This feature is coming soon!', true);
+                        },
                         child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 18),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset('assets/icons/google.png'),
-                              const SizedBox(
-                                width: 8,
-                              ),
-                              Text(
-                                'Login with Google',
-                                style: semiboldTS.copyWith(
-                                  fontSize: 16,
-                                  color: blackColor,
+                          decoration: BoxDecoration(
+                            color: whiteColor,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 18),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset('assets/icons/google.png'),
+                                const SizedBox(
+                                  width: 8,
                                 ),
-                              ),
-                            ],
+                                Text(
+                                  'Login with Google',
+                                  style: semiboldTS.copyWith(
+                                    fontSize: 16,
+                                    color: blackColor,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -270,12 +306,14 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             bottomNavigationBar: BottomAppBar(
-              color: const Color(0xffFFFFFF),
+              color: whiteBackground,
               elevation: 0,
               child: GestureDetector(
                 onTap: () {
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, '/register', (route) => false);
+                  Navigator.pushNamed(
+                    context,
+                    '/register',
+                  );
                 },
                 child: Container(
                   margin: const EdgeInsets.all(24),
@@ -311,14 +349,39 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final bool _passwordVisible = false;
+  // final bool _passwordVisible = false;
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  bool areFieldsEmpty = true;
+
+  @override
+  void initState() {
+    super.initState();
+    nameController.addListener(updateFieldState);
+    emailController.addListener(updateFieldState);
+    passwordController.addListener(updateFieldState);
+  }
+
+  @override
+  void dispose() {
+    nameController.removeListener(updateFieldState);
+    emailController.removeListener(updateFieldState);
+    passwordController.removeListener(updateFieldState);
+    emailController.dispose();
+    super.dispose();
+  }
+
+  void updateFieldState() {
+    setState(() {
+      areFieldsEmpty = emailController.text.isEmpty ||
+          passwordController.text.isEmpty ||
+          nameController.text.isEmpty;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final nameController = TextEditingController();
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
-
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is Authenticated) {
@@ -405,18 +468,9 @@ class _RegisterPageState extends State<RegisterPage> {
                           contentPadding: const EdgeInsets.all(20),
                           hintStyle: mediumTS.copyWith(
                               color: greyBlur40, fontSize: 14),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: greyBlur10),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: greyBlur10),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: greyBlur10),
-                          ),
+                          border: defaultInputBorder,
+                          enabledBorder: defaultInputBorder,
+                          focusedBorder: defaultInputBorder,
                         ),
                       ),
                       const SizedBox(
@@ -438,18 +492,9 @@ class _RegisterPageState extends State<RegisterPage> {
                           contentPadding: const EdgeInsets.all(20),
                           hintStyle: mediumTS.copyWith(
                               color: greyBlur40, fontSize: 14),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: greyBlur10),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: greyBlur10),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: greyBlur10),
-                          ),
+                          border: defaultInputBorder,
+                          enabledBorder: defaultInputBorder,
+                          focusedBorder: defaultInputBorder,
                         ),
                       ),
                       const SizedBox(
@@ -466,7 +511,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       TextFormField(
                         controller: passwordController,
-                        obscureText: !_passwordVisible,
+                        obscureText: true,
                         decoration: InputDecoration(
                           // suffixIcon: IconButton(
                           //   onPressed: () {
@@ -482,50 +527,63 @@ class _RegisterPageState extends State<RegisterPage> {
                           contentPadding: const EdgeInsets.all(20),
                           hintStyle: mediumTS.copyWith(
                               color: greyBlur40, fontSize: 14),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: greyBlur10),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: greyBlur10),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: greyBlur10),
-                          ),
+                          border: defaultInputBorder,
+                          enabledBorder: defaultInputBorder,
+                          focusedBorder: defaultInputBorder,
                         ),
                       ),
 
                       const SizedBox(
                         height: 24,
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          BlocProvider.of<AuthBloc>(context).add(
-                            AuthSignUp(
-                              emailController.text,
-                              passwordController.text,
-                            ),
-                          );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 18),
-                          decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Register',
-                              style: semiboldTS.copyWith(
-                                fontSize: 16,
-                                color: Colors.white,
+                      !areFieldsEmpty
+                          ? GestureDetector(
+                              onTap: () {
+                                BlocProvider.of<AuthBloc>(context).add(
+                                  AuthSignUp(
+                                    emailController.text,
+                                    passwordController.text,
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 18),
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Register',
+                                    style: semiboldTS.copyWith(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Opacity(
+                              opacity: 0.2,
+                              child: Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 18),
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Register',
+                                    style: semiboldTS.copyWith(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      ),
                       Container(
                         margin: const EdgeInsets.symmetric(vertical: 12),
                         child: Row(
@@ -554,28 +612,34 @@ class _RegisterPageState extends State<RegisterPage> {
                           ],
                         ),
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: whiteColor,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
+                      GestureDetector(
+                        onTap: () {
+                          showSnackbar(
+                              context, 'This feature is coming soon!', true);
+                        },
                         child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 18),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset('assets/icons/google.png'),
-                              const SizedBox(
-                                width: 8,
-                              ),
-                              Text(
-                                'Register with Google',
-                                style: semiboldTS.copyWith(
-                                  fontSize: 16,
-                                  color: blackColor,
+                          decoration: BoxDecoration(
+                            color: whiteColor,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 18),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset('assets/icons/google.png'),
+                                const SizedBox(
+                                  width: 8,
                                 ),
-                              ),
-                            ],
+                                Text(
+                                  'Register with Google',
+                                  style: semiboldTS.copyWith(
+                                    fontSize: 16,
+                                    color: blackColor,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -589,8 +653,7 @@ class _RegisterPageState extends State<RegisterPage> {
               elevation: 0,
               child: GestureDetector(
                 onTap: () {
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, '/login', (route) => false);
+                  Navigator.pushNamed(context, '/login');
                 },
                 child: Container(
                   margin: const EdgeInsets.all(24),
@@ -699,37 +762,58 @@ class _UploadProfilePictureState extends State<UploadProfilePicture> {
                     fontSize: 14, color: greyBlur60, height: 1.7),
               ),
               const SizedBox(
-                height: 90,
+                height: 70,
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    height: 200,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: whiteColor, width: 20),
-                      color: const Color(0xffFFFFFF),
-                      shape: BoxShape.circle,
-                      image: pickedImage != null
-                          ? DecorationImage(
-                              image: MemoryImage(pickedImage!),
-                            )
-                          : const DecorationImage(
-                              scale: 2,
-                              image: AssetImage(
-                                'assets/icons/profile_picture_skeleton.png',
-                              ),
-                            ),
-                    ),
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        height: 180,
+                        width: 180,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: pickedImage != null
+                              ? DecorationImage(
+                                  image: MemoryImage(pickedImage!),
+                                  fit: BoxFit.cover,
+                                )
+                              : const DecorationImage(
+                                  scale: 2,
+                                  image: AssetImage(
+                                    'assets/icons/profile_picture_skeleton.png',
+                                  ),
+                                ),
+                        ),
+                      ),
+                      Container(
+                        height: 220,
+                        width: 220,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: whiteColor, width: 20),
+                          color: Colors.transparent,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(
-                    height: 24,
-                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 24,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
                   GestureDetector(
                     onTap: () async {
                       Uint8List? img = await pickImage(ImageSource.gallery);
                       setState(() {
-                        pickedImage = img;
+                        if (img != null) {
+                          pickedImage = img;
+                        }
                       });
                     },
                     child: Container(
@@ -774,7 +858,7 @@ class _UploadProfilePictureState extends State<UploadProfilePicture> {
                         ),
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ],
@@ -806,6 +890,242 @@ class _UploadProfilePictureState extends State<UploadProfilePicture> {
             )
           : Opacity(
               opacity: 0.2,
+              child: Container(
+                height: 56,
+                margin: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(vertical: 18),
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Center(
+                  child: Text(
+                    'Done',
+                    style: semiboldTS.copyWith(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+    );
+  }
+}
+
+class ForgotPassword extends StatefulWidget {
+  const ForgotPassword({super.key});
+
+  @override
+  State<ForgotPassword> createState() => _ForgotPasswordState();
+}
+
+class _ForgotPasswordState extends State<ForgotPassword> {
+  final emailController = TextEditingController();
+  bool isEmailEmpty = true;
+
+  @override
+  void initState() {
+    super.initState();
+    emailController.addListener(updateEmailState);
+  }
+
+  @override
+  void dispose() {
+    emailController.removeListener(updateEmailState);
+    emailController.dispose();
+    super.dispose();
+  }
+
+  void updateEmailState() {
+    setState(() {
+      isEmailEmpty = emailController.text.isEmpty;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 72,
+        backgroundColor: whiteBackground,
+        elevation: 0,
+        leadingWidth: 68,
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Container(
+            height: 48,
+            width: 48,
+            margin: const EdgeInsets.only(left: 18),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: greyBlur20),
+            ),
+            child: Center(
+              child: Image.asset(
+                'assets/icons/news_back.png',
+                width: 24,
+              ),
+            ),
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Forgot Password',
+                style: semiboldTS.copyWith(fontSize: 32),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                'To reset your password, we have to sent link for reset password in to your active email.',
+                style: mediumTS.copyWith(
+                    fontSize: 14, color: greyBlur60, height: 1.7),
+              ),
+              const SizedBox(
+                height: 28,
+              ),
+
+              // Name Form
+              Text(
+                'Email',
+                style: semiboldTS.copyWith(fontSize: 14),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              TextFormField(
+                controller: emailController,
+                decoration: InputDecoration(
+                  hintText: 'Type your email',
+                  contentPadding: const EdgeInsets.all(20),
+                  hintStyle: mediumTS.copyWith(color: greyBlur40, fontSize: 14),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: greyBlur10),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: greyBlur10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: greyBlur10),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+            ],
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: isEmailEmpty
+          ? Opacity(
+              opacity: 0.2,
+              child: Container(
+                height: 56,
+                margin: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(vertical: 18),
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Center(
+                  child: Text(
+                    'Done',
+                    style: semiboldTS.copyWith(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            )
+          : GestureDetector(
+              onTap: () async {
+                try {
+                  showLoadingDialog(context, 'Processing...');
+                  await FirebaseAuth.instance
+                      .sendPasswordResetEmail(email: emailController.text);
+                  Navigator.pop(context);
+                  showDialog(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          alignment: Alignment.center,
+                          insetPadding: EdgeInsets.zero,
+                          backgroundColor: Colors.transparent,
+                          content: Container(
+                            height: 247,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 64, vertical: 16),
+                            decoration: BoxDecoration(
+                                color: whiteColor,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: greyBlur60)),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  'assets/icons/email_sent.png',
+                                  scale: 2,
+                                ),
+                                const SizedBox(
+                                  height: 12,
+                                ),
+                                Text(
+                                  'Password reset link has been\nsent to your email!',
+                                  style: semiboldTS.copyWith(fontSize: 14),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 24,
+                                      vertical: 15,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: blackColor, width: 2),
+                                      borderRadius: BorderRadius.circular(100),
+                                    ),
+                                    child: FittedBox(
+                                      child: Text(
+                                        'Understand',
+                                        style:
+                                            semiboldTS.copyWith(fontSize: 14),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        );
+                      });
+                } on FirebaseAuthException catch (e) {
+                  Navigator.pop(context);
+                  showSnackbar(context, e.code, true);
+                }
+              },
               child: Container(
                 height: 56,
                 margin: const EdgeInsets.all(16),

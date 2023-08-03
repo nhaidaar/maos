@@ -22,6 +22,11 @@ TextStyle regularTS = const TextStyle(
 TextStyle actionButton = const TextStyle(
     fontFamily: 'Montserrat', fontSize: 12, fontWeight: FontWeight.w500);
 
+InputBorder defaultInputBorder = OutlineInputBorder(
+  borderRadius: BorderRadius.circular(10),
+  borderSide: BorderSide(color: greyBlur10),
+);
+
 List<String> apikey = [
   'pub_2641270ecc76cc552d8816cced3dcf5f18da3',
   'pub_2648234c3f04a67afab9de7957db71d02e30d',

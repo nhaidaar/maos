@@ -53,7 +53,7 @@ class _HotTopicCardState extends State<HotTopicCard> {
                 fit: BoxFit.cover,
                 image: widget.model.imageUrl == null
                     ? const AssetImage(
-                        'assets/images/news1.jpg',
+                        'assets/images/news.jpg',
                       )
                     : NetworkImage(widget.model.imageUrl.toString())
                         as ImageProvider,
