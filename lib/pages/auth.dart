@@ -52,11 +52,11 @@ class _LoginPageState extends State<LoginPage> {
       listener: (context, state) {
         if (state is Authenticated) {
           // Navigating to the dashboard screen if the user is authenticated
-          Navigator.pushNamed(context, '/home');
+          Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
         }
         if (state is AuthError) {
           // Showing the error message if the user has entered invalid credentials
-          showSnackbar(context, state.e, true);
+          showBottomSnackbar(context, state.e, true);
         }
       },
       child: BlocBuilder<AuthBloc, AuthState>(
@@ -271,8 +271,10 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          showSnackbar(
+                          showLoadingDialog(context, 'Please wait...');
+                          showTopSnackbar(
                               context, 'This feature is coming soon!', true);
+                          Navigator.pop(context);
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -388,11 +390,12 @@ class _RegisterPageState extends State<RegisterPage> {
           // Navigating to the dashboard screen if the user is authenticated
           FirebaseAuth.instance.currentUser!
               .updateDisplayName(nameController.text);
-          Navigator.pushReplacementNamed(context, '/uploadpp');
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/uploadpp', (route) => false);
         }
         if (state is AuthError) {
           // Showing the error message if the user has entered invalid credentials
-          showSnackbar(context, state.e, true);
+          showBottomSnackbar(context, state.e, true);
         }
       },
       child: BlocBuilder<AuthBloc, AuthState>(
@@ -614,8 +617,10 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          showSnackbar(
+                          showLoadingDialog(context, 'Please wait...');
+                          showTopSnackbar(
                               context, 'This feature is coming soon!', true);
+                          Navigator.pop(context);
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -703,18 +708,19 @@ class _UploadProfilePictureState extends State<UploadProfilePicture> {
       // Pop Loading when Success
       Navigator.pop(context);
       // Show Success Snackbar
-      showSnackbar(context, 'Your image was completedly uploaded!', false);
+      showBottomSnackbar(
+          context, 'Your image was completedly uploaded!', false);
       // Navigate to Home
       Navigator.pushNamedAndRemoveUntil(
         context,
         '/home',
         (route) => false,
       );
-    } catch (e) {
+    } on FirebaseAuthException catch (e) {
       // Pop Loading when Failed
       Navigator.pop(context);
       // Show Error Snackbar
-      showSnackbar(context, e.toString(), true);
+      showTopSnackbar(context, e.code, true);
     }
   }
 
@@ -1123,7 +1129,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       });
                 } on FirebaseAuthException catch (e) {
                   Navigator.pop(context);
-                  showSnackbar(context, e.code, true);
+                  showTopSnackbar(context, e.code, true);
                 }
               },
               child: Container(

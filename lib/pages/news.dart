@@ -375,7 +375,7 @@ class NotificationAction extends StatelessWidget {
                   if (!followed) {
                     await NewsService()
                         .followPublisher(model.sourceId.toString());
-                    showSnackbar(
+                    showBottomSnackbar(
                         context,
                         'You are now following \'${capitalizeFirstLetter(model.sourceId!)}\' !',
                         false);
@@ -383,14 +383,14 @@ class NotificationAction extends StatelessWidget {
                   } else {
                     await NewsService()
                         .unfollowPublisher(model.sourceId.toString());
-                    showSnackbar(
+                    showBottomSnackbar(
                         context,
                         'You are no longer following \'${capitalizeFirstLetter(model.sourceId!)}\' !',
                         false);
                     Navigator.pop(context);
                   }
                 } else {
-                  showSnackbar(context,
+                  showBottomSnackbar(context,
                       'You need to be logged in to use this feature!', true);
                   Navigator.pop(context);
                 }
@@ -470,15 +470,16 @@ class NotificationAction extends StatelessWidget {
                 if (user != null) {
                   if (!saved) {
                     await NewsService().saveNews(model);
-                    showSnackbar(context, 'Article saved successfully!', false);
+                    showBottomSnackbar(
+                        context, 'Article saved successfully!', false);
                     Navigator.pop(context);
                   } else {
                     await NewsService().deleteSavedNews(model);
-                    showSnackbar(context, 'Article unsaved!', false);
+                    showBottomSnackbar(context, 'Article unsaved!', false);
                     Navigator.pop(context);
                   }
                 } else {
-                  showSnackbar(context,
+                  showBottomSnackbar(context,
                       'You need to be logged in to use this feature!', true);
                   Navigator.pop(context);
                 }

@@ -220,44 +220,44 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/notif');
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.all(4),
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: greyBlur20),
-                      shape: BoxShape.circle,
-                      image: const DecorationImage(
-                        scale: 2.2,
-                        image: AssetImage(
-                          'assets/icons/notification.png',
-                        ),
-                      ),
-                    ),
-                    child: Align(
-                      alignment: Alignment.topRight,
-                      child: Container(
-                        width: 18,
-                        height: 18,
-                        decoration: const BoxDecoration(
-                            color: Colors.black, shape: BoxShape.circle),
-                        child: Center(
-                          child: Text(
-                            '2',
-                            style: semiboldTS.copyWith(
-                              color: Colors.white,
-                              fontSize: 8,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                // GestureDetector(
+                //   onTap: () {
+                //     Navigator.pushNamed(context, '/notif');
+                //   },
+                //   child: Container(
+                //     margin: const EdgeInsets.all(4),
+                //     width: 48,
+                //     height: 48,
+                //     decoration: BoxDecoration(
+                //       border: Border.all(color: greyBlur20),
+                //       shape: BoxShape.circle,
+                //       image: const DecorationImage(
+                //         scale: 2.2,
+                //         image: AssetImage(
+                //           'assets/icons/notification.png',
+                //         ),
+                //       ),
+                //     ),
+                //     child: Align(
+                //       alignment: Alignment.topRight,
+                //       child: Container(
+                //         width: 18,
+                //         height: 18,
+                //         decoration: const BoxDecoration(
+                //             color: Colors.black, shape: BoxShape.circle),
+                //         child: Center(
+                //           child: Text(
+                //             '2',
+                //             style: semiboldTS.copyWith(
+                //               color: Colors.white,
+                //               fontSize: 8,
+                //             ),
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -742,7 +742,7 @@ class Profile extends StatelessWidget {
     return SafeArea(
       child: user != null
           ? Container(
-              margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 120),
+              margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 80),
               padding: const EdgeInsets.all(30),
               decoration: BoxDecoration(
                 border: Border.all(color: greyBlur20),
@@ -758,7 +758,7 @@ class Profile extends StatelessWidget {
                         height: 120,
                         width: 120,
                         decoration: BoxDecoration(
-                          border: Border.all(color: greyBlur20),
+                          // border: Border.all(color: greyBlur20),
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             fit: BoxFit.cover,
@@ -798,7 +798,7 @@ class Profile extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(
-                    height: 45,
+                    height: 32,
                   ),
                   Expanded(
                     child: Column(
@@ -926,6 +926,9 @@ class Profile extends StatelessWidget {
                         ),
                       ],
                     ),
+                  ),
+                  const SizedBox(
+                    height: 32,
                   ),
                   Text(
                     'Last Login : ${user.metadata.lastSignInTime}',
@@ -1180,8 +1183,8 @@ class _EditProfileState extends State<EditProfile> {
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                          vertical: 12,
-                          horizontal: 20,
+                          vertical: 10,
+                          horizontal: 18,
                         ),
                         decoration: BoxDecoration(
                           border: Border.all(color: greyColor, width: 1.5),
@@ -1193,16 +1196,15 @@ class _EditProfileState extends State<EditProfile> {
                             children: [
                               Image.asset(
                                 'assets/icons/profile_picture_change.png',
-                                width: 24,
-                                height: 24,
+                                width: 22,
+                                height: 22,
                               ),
                               const SizedBox(
                                 width: 8,
                               ),
                               Text(
                                 'Change Image',
-                                style: semiboldTS.copyWith(
-                                    fontSize: 14, color: blackColor),
+                                style: semiboldTS,
                               )
                             ],
                           ),
@@ -1278,7 +1280,7 @@ class _EditProfileState extends State<EditProfile> {
                       obscureText: true,
                       decoration: InputDecoration(
                         hintText:
-                            'Leave blank if you will not change your password',
+                            'Leave blank if you won\'t change your password',
                         contentPadding: const EdgeInsets.all(16),
                         hintStyle:
                             mediumTS.copyWith(color: greyBlur40, fontSize: 13),
@@ -1303,7 +1305,8 @@ class _EditProfileState extends State<EditProfile> {
                       controller: confirmPasswordController,
                       obscureText: true,
                       decoration: InputDecoration(
-                        hintText: 'Type your confirm password',
+                        hintText:
+                            'Type your password to confirm profile changes',
                         contentPadding: const EdgeInsets.all(16),
                         hintStyle:
                             mediumTS.copyWith(color: greyBlur40, fontSize: 13),
@@ -1320,62 +1323,63 @@ class _EditProfileState extends State<EditProfile> {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-          color: whiteBackground,
-          elevation: 0,
-          child: GestureDetector(
-            onTap: () async {
-              showLoadingDialog(context, 'Updating your profile...');
-              try {
-                await user!.reauthenticateWithCredential(
-                    EmailAuthProvider.credential(
-                        email: recentEmail,
-                        password: confirmPasswordController.text));
-                if (passwordController.text.isNotEmpty) {
-                  await user!.updatePassword(passwordController.text);
-                }
-                await user!.updateDisplayName(nameController.text);
-                await user!.updateEmail(emailController.text);
-
-                if (pickedImage != null) {
-                  final url =
-                      await uploadImageToStorage(user!.uid, pickedImage!);
-                  await user!.updatePhotoURL(url);
-                }
-                Navigator.pop(context);
-                // Show Success Snackbar
-                showSnackbar(
-                    context, 'Your profile was completedly updated!', false);
-                // Navigate to Home
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  '/home',
-                  (route) => false,
-                );
-              } on FirebaseAuthException catch (e) {
-                Navigator.pop(context);
-                // Show Error Snackbar
-                showSnackbar(context, e.code, true);
+        color: whiteBackground,
+        elevation: 0,
+        child: GestureDetector(
+          onTap: () async {
+            showLoadingDialog(context, 'Updating your profile...');
+            try {
+              await user!.reauthenticateWithCredential(
+                  EmailAuthProvider.credential(
+                      email: recentEmail,
+                      password: confirmPasswordController.text));
+              if (passwordController.text.isNotEmpty) {
+                await user!.updatePassword(passwordController.text);
               }
-            },
-            child: Container(
-              height: 56,
-              margin: const EdgeInsets.all(20),
-              padding: const EdgeInsets.symmetric(vertical: 18),
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(100),
-              ),
-              child: Center(
-                child: Text(
-                  'Update',
-                  style: semiboldTS.copyWith(
-                    fontSize: 16,
-                    color: Colors.white,
-                  ),
+              if (recentEmail != emailController.text) {
+                await user!.updateEmail(emailController.text);
+              }
+              if (pickedImage != null) {
+                final url = await uploadImageToStorage(user!.uid, pickedImage!);
+                await user!.updatePhotoURL(url);
+              }
+              await user!.updateDisplayName(nameController.text);
+              Navigator.pop(context);
+              // Show Success Snackbar
+              showBottomSnackbar(
+                  context, 'Your profile was completedly updated!', false);
+              // Navigate to Home
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/home',
+                (route) => false,
+              );
+            } on FirebaseAuthException catch (e) {
+              Navigator.pop(context);
+              // Show Error Snackbar
+              showTopSnackbar(context, e.code, true);
+            }
+          },
+          child: Container(
+            height: 56,
+            margin: const EdgeInsets.all(20),
+            padding: const EdgeInsets.symmetric(vertical: 18),
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(100),
+            ),
+            child: Center(
+              child: Text(
+                'Update',
+                style: semiboldTS.copyWith(
+                  fontSize: 16,
+                  color: Colors.white,
                 ),
               ),
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 }

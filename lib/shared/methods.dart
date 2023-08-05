@@ -28,7 +28,7 @@ Future<bool> doesAssetExist(String assetName) async {
   }
 }
 
-void showSnackbar(BuildContext context, String text, bool isError) {
+void showBottomSnackbar(BuildContext context, String text, bool isError) {
   AnimatedSnackBar(
     snackBarStrategy: RemoveSnackBarStrategy(),
     builder: (context) {
@@ -71,6 +71,52 @@ void showSnackbar(BuildContext context, String text, bool isError) {
       );
     },
     mobileSnackBarPosition: MobileSnackBarPosition.bottom,
+  ).show(context);
+}
+
+void showTopSnackbar(BuildContext context, String text, bool isError) {
+  AnimatedSnackBar(
+    snackBarStrategy: RemoveSnackBarStrategy(),
+    builder: (context) {
+      return Material(
+        borderRadius: BorderRadius.circular(10),
+        elevation: 5,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: greyBlur10),
+            color: const Color(0xffFFFFFF),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  text,
+                  style: semiboldTS,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(
+                width: 6,
+              ),
+              !isError
+                  ? const Icon(
+                      Icons.check_circle_rounded,
+                      color: Color(0xff00A47D),
+                    )
+                  : const Icon(
+                      Icons.error_rounded,
+                      color: Color(0xffEA4335),
+                    ),
+            ],
+          ),
+        ),
+      );
+    },
+    mobileSnackBarPosition: MobileSnackBarPosition.top,
   ).show(context);
 }
 
