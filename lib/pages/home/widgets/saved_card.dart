@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:maos/shared/methods.dart';
-import 'package:maos/theme.dart';
+import 'package:maos/shared/theme.dart';
 
 class SavedCard extends StatelessWidget {
   final String title, imgUrl, category, publisher, date;

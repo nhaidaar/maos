@@ -5,7 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:maos/models/news_model.dart';
-import 'package:maos/theme.dart';
+
+import '../shared/values.dart';
 
 class NewsService {
   Future<List<NewsModel>> getNews(String category) async {

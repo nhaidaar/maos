@@ -6,10 +6,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:maos/blocs/news/news_bloc.dart';
 import 'package:maos/models/news_model.dart';
+import 'package:maos/pages/news/widgets/news_action.dart';
 import 'package:maos/services/news_services.dart';
 import 'package:maos/shared/methods.dart';
-import 'package:maos/theme.dart';
-import 'package:maos/widgets/recommend.dart';
+import 'package:maos/shared/theme.dart';
+import 'package:maos/widgets/recommended_card.dart';
+import 'package:page_transition/page_transition.dart';
 
 class NewsPage extends StatefulWidget {
   final NewsModel model;
@@ -39,6 +41,7 @@ class _NewsPageState extends State<NewsPage> {
 
   bool _assetExists = false;
 
+  // Check asset of Publisher Logo
   Future<void> checkAsset() async {
     bool assetExists = await doesAssetExist(
         'assets/images/logo_${widget.model.sourceId}.png'); // Replace with the actual asset path.
@@ -89,6 +92,7 @@ class _NewsPageState extends State<NewsPage> {
           GestureDetector(
             onTap: () async {
               if (user != null) {
+                // Checking, Is user followed the publisher and saved the news
                 bool isFollowed = await NewsService()
                     .checkFollowedPublisher(widget.model.sourceId.toString());
                 bool isSaved = await NewsService().checkSavedNews(widget.model);
@@ -99,11 +103,12 @@ class _NewsPageState extends State<NewsPage> {
               }
               showDialog(
                 context: context,
-                builder: (context) => NotificationAction(
+                builder: (context) => NewsAction(
                   model: widget.model,
                   followed: followed,
                   saved: saved,
                 ),
+                barrierColor: greyBlur25,
               );
             },
             child: Container(
@@ -132,6 +137,7 @@ class _NewsPageState extends State<NewsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Category and Predicate
                   Row(
                     children: [
                       Text(
@@ -152,16 +158,22 @@ class _NewsPageState extends State<NewsPage> {
                       ),
                     ],
                   ),
+
                   const SizedBox(
                     height: 12,
                   ),
+
+                  // Title
                   Text(
                     widget.model.title.toString(),
                     style: semiboldTS.copyWith(fontSize: 24),
                   ),
+
                   const SizedBox(
                     height: 12,
                   ),
+
+                  // Publisher logo, name, and published date
                   Row(
                     children: [
                       Container(
@@ -198,9 +210,12 @@ class _NewsPageState extends State<NewsPage> {
                 ],
               ),
             ),
+
             const SizedBox(
               height: 8,
             ),
+
+            // Short description of news
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.only(left: 10),
@@ -212,6 +227,8 @@ class _NewsPageState extends State<NewsPage> {
                   ),
                 ),
               ),
+
+              // If description null, replace with title
               child: widget.model.description == null
                   ? Text(
                       replaceSpecialCharacters(widget.model.title.toString()),
@@ -225,9 +242,12 @@ class _NewsPageState extends State<NewsPage> {
                       textAlign: TextAlign.justify,
                     ),
             ),
+
             const SizedBox(
               height: 18,
             ),
+
+            // Thumbnail
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               height: 210,
@@ -244,6 +264,8 @@ class _NewsPageState extends State<NewsPage> {
                 ),
               ),
             ),
+
+            // News Content
             Container(
               margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
               child: Column(
@@ -267,6 +289,8 @@ class _NewsPageState extends State<NewsPage> {
                     .toList(),
               ),
             ),
+
+            // Back to Top button
             GestureDetector(
               onTap: () {
                 _scrollToTop();
@@ -287,6 +311,8 @@ class _NewsPageState extends State<NewsPage> {
                 ),
               ),
             ),
+
+            // Recommended News
             Container(
               margin: const EdgeInsets.only(left: 16, bottom: 8),
               child: Text(
@@ -312,13 +338,14 @@ class _NewsPageState extends State<NewsPage> {
                               return Recommend(
                                 model: recommend,
                                 action: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => NewsPage(
+                                  Navigator.of(context).push(
+                                    PageTransition(
+                                      child: NewsPage(
                                         model: recommend,
                                         predicate: 'Recommended news ✨',
                                       ),
+                                      type: PageTransitionType.rightToLeft,
+                                      childCurrent: widget,
                                     ),
                                   );
                                 },
@@ -333,227 +360,9 @@ class _NewsPageState extends State<NewsPage> {
                 ],
               ),
             ),
+
             const SizedBox(
               height: 30,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class NotificationAction extends StatelessWidget {
-  final NewsModel model;
-  final bool followed, saved;
-  const NotificationAction(
-      {super.key,
-      required this.model,
-      required this.followed,
-      required this.saved});
-
-  @override
-  Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-
-    return AlertDialog(
-      alignment: Alignment.topRight,
-      insetPadding: EdgeInsets.only(
-        left: MediaQuery.of(context).size.width / 2.5,
-        top: 72,
-        right: 16,
-      ),
-      contentPadding: EdgeInsets.zero,
-      content: SizedBox(
-        height: 200,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GestureDetector(
-              onTap: () async {
-                if (user != null) {
-                  if (!followed) {
-                    await NewsService()
-                        .followPublisher(model.sourceId.toString());
-                    showBottomSnackbar(
-                        context,
-                        'You are now following \'${capitalizeFirstLetter(model.sourceId!)}\' !',
-                        false);
-                    Navigator.pop(context);
-                  } else {
-                    await NewsService()
-                        .unfollowPublisher(model.sourceId.toString());
-                    showBottomSnackbar(
-                        context,
-                        'You are no longer following \'${capitalizeFirstLetter(model.sourceId!)}\' !',
-                        false);
-                    Navigator.pop(context);
-                  }
-                } else {
-                  showBottomSnackbar(context,
-                      'You need to be logged in to use this feature!', true);
-                  Navigator.pop(context);
-                }
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                height: 50,
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: greyBlur20),
-                  ),
-                ),
-                child: !followed
-                    ? Row(
-                        children: [
-                          Image.asset(
-                            'assets/icons/news_follow.png',
-                            scale: 2.5,
-                          ),
-                          const SizedBox(
-                            width: 8,
-                          ),
-                          Text(
-                            'Follow \'${capitalizeFirstLetter(model.sourceId.toString())}\'',
-                            style: actionButton,
-                          ),
-                        ],
-                      )
-                    : Row(
-                        children: [
-                          Image.asset(
-                            'assets/icons/news_unfollow.png',
-                            scale: 2.5,
-                          ),
-                          const SizedBox(
-                            width: 8,
-                          ),
-                          Text(
-                            'Unfollow \'${capitalizeFirstLetter(model.sourceId.toString())}\'',
-                            style: actionButton,
-                          ),
-                        ],
-                      ),
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                // showCustomSnackbar(context, null);
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                height: 50,
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: greyBlur20),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Image.asset(
-                      'assets/icons/news_share.png',
-                      scale: 2.5,
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Text(
-                      'Share',
-                      style: actionButton,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            GestureDetector(
-              onTap: () async {
-                if (user != null) {
-                  if (!saved) {
-                    await NewsService().saveNews(model);
-                    showBottomSnackbar(
-                        context, 'Article saved successfully!', false);
-                    Navigator.pop(context);
-                  } else {
-                    await NewsService().deleteSavedNews(model);
-                    showBottomSnackbar(context, 'Article unsaved!', false);
-                    Navigator.pop(context);
-                  }
-                } else {
-                  showBottomSnackbar(context,
-                      'You need to be logged in to use this feature!', true);
-                  Navigator.pop(context);
-                }
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                height: 50,
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: greyBlur20),
-                  ),
-                ),
-                child: !saved
-                    ? Row(
-                        children: [
-                          Image.asset(
-                            'assets/icons/news_save.png',
-                            scale: 2.5,
-                          ),
-                          const SizedBox(
-                            width: 8,
-                          ),
-                          Text(
-                            'Save article',
-                            style: actionButton,
-                          ),
-                        ],
-                      )
-                    : Row(
-                        children: [
-                          Image.asset(
-                            'assets/icons/news_unsave.png',
-                            scale: 2.5,
-                          ),
-                          const SizedBox(
-                            width: 8,
-                          ),
-                          Text(
-                            'Unsave article',
-                            style: actionButton,
-                          ),
-                        ],
-                      ),
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                // showCustomSnackbar(context, null);
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                height: 50,
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: greyBlur20),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Image.asset(
-                      'assets/icons/news_report.png',
-                      scale: 2.5,
-                      color: Colors.red,
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Text(
-                      'Report',
-                      style: actionButton.copyWith(color: Colors.red),
-                    ),
-                  ],
-                ),
-              ),
             ),
           ],
         ),

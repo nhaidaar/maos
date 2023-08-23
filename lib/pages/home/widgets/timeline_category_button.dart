@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:maos/shared/methods.dart';
-import 'package:maos/theme.dart';
+import 'package:maos/shared/theme.dart';
 
 class Category extends StatelessWidget {
   final String title;

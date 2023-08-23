@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:maos/pages/home.dart';
-import 'package:maos/pages/auth.dart';
+import 'package:maos/pages/home/home.dart';
+import 'package:maos/pages/auth/login.dart';
 
 class Checker extends StatelessWidget {
   const Checker({super.key});

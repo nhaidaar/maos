@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:maos/models/news_model.dart';
 import 'package:maos/shared/methods.dart';
-import 'package:maos/theme.dart';
+import 'package:maos/shared/theme.dart';
 
 class TopPicksCard extends StatelessWidget {
   final NewsModel model;
@@ -19,6 +19,8 @@ class TopPicksCard extends StatelessWidget {
     return GestureDetector(
       onTap: action,
       child: Container(
+        height: 70,
+        width: double.infinity,
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Row(
           children: [
@@ -40,6 +42,8 @@ class TopPicksCard extends StatelessWidget {
             ),
             Flexible(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     replaceSpecialCharacters(model.title.toString()),
@@ -48,9 +52,7 @@ class TopPicksCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
                   ),
-                  const SizedBox(
-                    height: 16,
-                  ),
+                  const Spacer(),
                   Row(
                     children: [
                       Text(

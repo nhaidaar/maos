@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:maos/blocs/news/news_bloc.dart';
-import 'package:maos/pages/news.dart';
-import 'package:maos/theme.dart';
-import 'package:maos/widgets/top_picks.dart';
+import 'package:maos/pages/news/news.dart';
+import 'package:maos/shared/theme.dart';
+import 'package:maos/widgets/toppicks_card.dart';
+import 'package:page_transition/page_transition.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -51,7 +52,6 @@ class _SearchPageState extends State<SearchPage> {
           ),
         ),
         title: TextFormField(
-          autofocus: true,
           onFieldSubmitted: (value) {
             if (value.isNotEmpty) {
               newsBloc.add(NewsSearch(value));
@@ -81,23 +81,18 @@ class _SearchPageState extends State<SearchPage> {
               borderRadius: BorderRadius.circular(28),
               borderSide: BorderSide(color: greyBlur20),
             ),
-            focusedBorder: OutlineInputBorder(
-              gapPadding: 10,
-              borderRadius: BorderRadius.circular(28),
-              borderSide: BorderSide(color: greyBlur20),
-            ),
           ),
         ),
       ),
       body: searchController.text.isNotEmpty
-          ? searchResult2(searchController.text)
+          ? searchResult(searchController.text, widget)
           : Container(),
       backgroundColor: Colors.white,
     );
   }
 }
 
-Widget searchResult2(String search) {
+Widget searchResult(String search, Widget widget) {
   return ListView(
     children: [
       Container(
@@ -126,10 +121,11 @@ Widget searchResult2(String search) {
                 return TopPicksCard(
                   model: news,
                   action: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NewsPage(model: news),
+                    Navigator.of(context).push(
+                      PageTransition(
+                        child: NewsPage(model: news),
+                        type: PageTransitionType.rightToLeft,
+                        childCurrent: widget,
                       ),
                     );
                   },

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:maos/theme.dart';
+import 'package:maos/shared/theme.dart';
 
 class Publisher extends StatelessWidget {
   final String name, imgUrl;

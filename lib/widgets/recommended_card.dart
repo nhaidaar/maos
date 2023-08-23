@@ -2,7 +2,7 @@ import 'package:card_loading/card_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:maos/shared/methods.dart';
-import 'package:maos/theme.dart';
+import 'package:maos/shared/theme.dart';
 import 'package:maos/models/news_model.dart';
 
 class Recommend extends StatelessWidget {
@@ -16,7 +16,8 @@ class Recommend extends StatelessWidget {
       onTap: action,
       child: Container(
         margin: const EdgeInsets.only(right: 10),
-        width: 170,
+        height: 190,
+        width: 180,
         child: Column(
           children: [
             Container(
@@ -40,10 +41,9 @@ class Recommend extends StatelessWidget {
               style: semiboldTS.copyWith(height: 1.44),
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
+              textAlign: TextAlign.start,
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const Spacer(),
             Row(
               children: [
                 Text(
@@ -86,7 +86,7 @@ class RecommendLoading extends StatelessWidget {
     return Row(
       children: [
         ...List.generate(
-          3,
+          5,
           (_) => Container(
             margin: const EdgeInsets.only(right: 10),
             width: 170,
