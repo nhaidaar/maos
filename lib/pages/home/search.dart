@@ -52,6 +52,7 @@ class _SearchPageState extends State<SearchPage> {
           ),
         ),
         title: TextFormField(
+          autofocus: true,
           onFieldSubmitted: (value) {
             if (value.isNotEmpty) {
               newsBloc.add(NewsSearch(value));

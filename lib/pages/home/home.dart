@@ -51,52 +51,90 @@ class _HomePageState extends State<HomePage> {
           },
           type: BottomNavigationBarType.fixed,
           selectedItemColor: Colors.black,
-          selectedLabelStyle:
-              semiboldTS.copyWith(fontSize: 11, color: Colors.black),
-          unselectedLabelStyle:
-              mediumTS.copyWith(fontSize: 11, color: Colors.black),
-          items: [
+          selectedLabelStyle: semiboldTS.copyWith(fontSize: 12),
+          unselectedLabelStyle: mediumTS.copyWith(fontSize: 12),
+          items: const [
             BottomNavigationBarItem(
-              icon: Image.asset(
-                'assets/icons/home_outlined.png',
-                scale: 2,
+              icon: Padding(
+                padding: EdgeInsets.only(bottom: 4),
+                child: ImageIcon(
+                  AssetImage(
+                    'assets/icons/home_outlined.png',
+                  ),
+                  size: 25,
+                ),
               ),
-              activeIcon: Image.asset(
-                'assets/icons/home_filled.png',
-                scale: 2,
+              activeIcon: Padding(
+                padding: EdgeInsets.only(bottom: 4),
+                child: ImageIcon(
+                  AssetImage(
+                    'assets/icons/home_filled.png',
+                  ),
+                  size: 25,
+                ),
               ),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Image.asset(
-                'assets/icons/following_outlined.png',
-                scale: 2,
+              icon: Padding(
+                padding: EdgeInsets.only(bottom: 4),
+                child: ImageIcon(
+                  AssetImage(
+                    'assets/icons/following_outlined.png',
+                  ),
+                  size: 25,
+                ),
               ),
-              activeIcon: Image.asset(
-                'assets/icons/following_filled.png',
-                scale: 2,
+              activeIcon: Padding(
+                padding: EdgeInsets.only(bottom: 4),
+                child: ImageIcon(
+                  AssetImage(
+                    'assets/icons/following_filled.png',
+                  ),
+                  size: 25,
+                ),
               ),
               label: 'Following',
             ),
             BottomNavigationBarItem(
-              icon: Image.asset(
-                'assets/icons/saved_outlined.png',
-                scale: 2,
+              icon: Padding(
+                padding: EdgeInsets.only(bottom: 4),
+                child: ImageIcon(
+                  AssetImage(
+                    'assets/icons/saved_outlined.png',
+                  ),
+                  size: 25,
+                ),
               ),
-              activeIcon: Image.asset(
-                'assets/icons/saved_filled.png',
-                scale: 2,
+              activeIcon: Padding(
+                padding: EdgeInsets.only(bottom: 4),
+                child: ImageIcon(
+                  AssetImage(
+                    'assets/icons/saved_filled.png',
+                  ),
+                  size: 25,
+                ),
               ),
               label: 'Saved',
             ),
             BottomNavigationBarItem(
-              icon: Image.asset(
-                'assets/icons/profile_circle_outlined.png',
-                scale: 2,
+              icon: Padding(
+                padding: EdgeInsets.only(bottom: 4),
+                child: ImageIcon(
+                  AssetImage(
+                    'assets/icons/profile_circle_outlined.png',
+                  ),
+                  size: 25,
+                ),
               ),
-              activeIcon: Image.asset(
-                'assets/icons/profile_circle_filled.png',
-                scale: 2,
+              activeIcon: Padding(
+                padding: EdgeInsets.only(bottom: 4),
+                child: ImageIcon(
+                  AssetImage(
+                    'assets/icons/profile_circle_filled.png',
+                  ),
+                  size: 25,
+                ),
               ),
               label: 'Profile',
             ),
